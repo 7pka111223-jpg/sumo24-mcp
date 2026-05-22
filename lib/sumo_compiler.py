@@ -52,6 +52,7 @@ The end product is loadable by `diagnose_sumo_file` and the DTT bridge.
 from __future__ import annotations
 
 import json
+import re as _re
 import shutil
 import zipfile
 from datetime import datetime, timezone
@@ -318,19 +319,30 @@ def build_from_html(
 
 
 def read_sumo_manifest(sumo_path: str | Path) -> dict:
-    """Open a .sumo zip and pull out the manifest as a parsed dict."""
+    """Open a .sumo zip and return a structural summary.
+
+    Happy path (manifest.xml present): parses the XML manifest and reports
+    unit / connection counts plus IDs.
+
+    Fallback path (manifest.xml missing — common for files saved by recent
+    SUMO24 versions): derives the same information from parameters.txt
+    using the param-line regex pattern, and reports which result members
+    (.ss, TSV, .ovl, DLL) are present. The response shape is identical
+    apart from a `source: "manifest"` vs `"fallback_parameters_txt"`
+    marker, so existing callers keep working.
+    """
     p = Path(sumo_path)
     if not p.exists():
         return {"ok": False, "error": f"not found: {p}"}
     if not zipfile.is_zipfile(p):
         return {"ok": False, "error": f"not a zip container: {p}"}
+
     try:
         with zipfile.ZipFile(p, "r") as zf:
             names = zf.namelist()
-            if "manifest.xml" not in names:
-                return {"ok": False, "error": "manifest.xml missing inside .sumo zip",
-                        "members": names}
-            manifest_text = zf.read("manifest.xml").decode("utf-8", errors="replace")
+            manifest_text = None
+            if "manifest.xml" in names:
+                manifest_text = zf.read("manifest.xml").decode("utf-8", errors="replace")
             metadata = {}
             if "metadata.json" in names:
                 try:
@@ -340,32 +352,81 @@ def read_sumo_manifest(sumo_path: str | Path) -> dict:
             state_text = ""
             if "state.xml" in names:
                 state_text = zf.read("state.xml").decode("utf-8", errors="replace")
+            params_text = ""
+            if "parameters.txt" in names:
+                params_text = zf.read("parameters.txt").decode("utf-8", errors="replace")
     except Exception as e:
         return {"ok": False, "error": f"zip read failed: {e}"}
 
-    # Parse manifest XML — best-effort, just count units/connections
-    import xml.etree.ElementTree as ET
-    try:
-        root = ET.fromstring(manifest_text)
-        units = root.findall("./units/unit")
-        conns = root.findall("./connections/connection")
-        unit_ids = [u.attrib.get("id") for u in units]
-        conn_ids = [c.attrib.get("id") for c in conns]
-    except Exception as e:
-        return {"ok": False, "error": f"manifest XML parse failed: {e}",
-                "manifest_text_sample": manifest_text[:500]}
+    # Common file-presence summary (always reported)
+    file_summary = {
+        "dll_present":            "sumoproject.dll" in names,
+        "parameters_txt_present": "parameters.txt" in names,
+        "steady_run_present":     "laststeadyrun.ss" in names,
+        "dynamic_run_present":    "lastdynamicrun.ss" in names,
+        "state_xml_present":      "state.xml" in names,
+        "tsv_count":              sum(1 for n in names if n.endswith(".tsv")),
+        "ovl_count":              sum(1 for n in names if n.endswith(".ovl")),
+    }
 
+    # Happy path — manifest.xml present
+    import xml.etree.ElementTree as ET
+    if manifest_text:
+        try:
+            root = ET.fromstring(manifest_text)
+            units = root.findall("./units/unit")
+            conns = root.findall("./connections/connection")
+            unit_ids = [u.attrib.get("id") for u in units]
+            conn_ids = [c.attrib.get("id") for c in conns]
+            return {
+                "ok": True,
+                "source": "manifest",
+                "sumo_path": str(p),
+                "members": names,
+                "unit_count": len(units),
+                "connection_count": len(conns),
+                "unit_ids": unit_ids,
+                "connection_ids": conn_ids,
+                "metadata": metadata,
+                "state_present": bool(state_text),
+                "state_variable_count": state_text.count("<variable ") if state_text else 0,
+                "files": file_summary,
+            }
+        except Exception as e:
+            # fall through to the parameters.txt fallback
+            metadata.setdefault("manifest_parse_warning", str(e))
+
+    # Fallback path — derive unit ids from parameters.txt
+    if not params_text:
+        return {
+            "ok": False,
+            "error": "manifest.xml missing AND parameters.txt missing — cannot describe project",
+            "members": names,
+            "files": file_summary,
+        }
+
+    unit_ids = sorted({
+        m.group("unit") for m in (
+            _re.match(
+                r"^Sumo__Plant__(?P<unit>[A-Za-z0-9_]+)__param__",
+                line,
+            ) for line in params_text.splitlines()
+        ) if m
+    })
     return {
         "ok": True,
+        "source": "fallback_parameters_txt",
         "sumo_path": str(p),
         "members": names,
-        "unit_count": len(units),
-        "connection_count": len(conns),
+        "unit_count": len(unit_ids),
+        "connection_count": None,
         "unit_ids": unit_ids,
-        "connection_ids": conn_ids,
+        "connection_ids": [],
         "metadata": metadata,
         "state_present": bool(state_text),
         "state_variable_count": state_text.count("<variable ") if state_text else 0,
+        "files": file_summary,
+        "note": "manifest.xml absent — unit ids derived from parameters.txt; connection topology unknown without manifest.",
     }
 
 

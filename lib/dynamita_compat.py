@@ -1,6 +1,6 @@
 """Compatibility shim for the official Dynamita SumoScheduler.
 
-The MCP server (server.py) calls three methods on `ds.sumo` (a SumoScheduler
+The MCP server (server.py) calls four methods on `ds.sumo` (a SumoScheduler
 instance) that exist in some internal/extended DTT distributions but are NOT
 present in the official, publicly shipped `dynamita.scheduler.SumoScheduler`
 class:
@@ -8,6 +8,7 @@ class:
     - executeCommand(cmd)
     - set(var, value)
     - getVariableNames()
+    - get(var)
 
 Without these, every model-build / parameter-set / inspection tool returns
 "'SumoScheduler' object has no attribute 'executeCommand'" and never reaches
@@ -25,6 +26,13 @@ exist. Their implementation:
 
     * `getVariableNames()` parses state.xml and returns the variable names
       recovered there, which is what most inspection tools actually need.
+
+    * `get(var)` resolves an individual Sumo state-variable name to a value
+      by, in order: looking in the per-process override queue (anything the
+      caller set via `.set()` since process start), reading the most recent
+      laststeadyrun.ss / lastdynamicrun.ss of the active project, and finally
+      falling back to state.xml. Returns the value or raises KeyError; the
+      MCP server's existing try/except wraps that into a JSON envelope.
 
 Activation: server.py simply does `import dynamita_compat` after importing
 dynamita.scheduler. The patch is idempotent and a no-op if the real methods
@@ -142,6 +150,134 @@ def _getVariableNames(self):
     return []
 
 
+def _candidate_ss_paths():
+    """Yield candidate .ss / state.xml file paths in priority order.
+
+    Priority: active project's siblings first, then env-pointed state.xml,
+    then the MCP-root state.xml. Non-existent paths are skipped by the
+    caller.
+    """
+    if _active_project is not None:
+        ap = _active_project
+        # If the active project is a .sumo zip, look inside it.
+        yield ("zip", ap, "laststeadyrun.ss")
+        yield ("zip", ap, "lastdynamicrun.ss")
+        # Sibling files (extracted_data style).
+        yield ("file", ap.with_name("laststeadyrun.ss"), None)
+        yield ("file", ap.with_name("lastdynamicrun.ss"), None)
+    yield ("file", Path(os.environ.get("SUMO_STATE", "")), None)
+    yield ("file", Path(__file__).resolve().parent.parent / "state.xml", None)
+
+
+def _params_txt_lookup(var: str):
+    """Read parameters.txt (constant inputs) from the active project's .sumo
+    zip or its sibling extracted_data folder. Returns the value or None."""
+    if _active_project is None:
+        return None
+    try:
+        import sumo_offline as _so
+    except Exception:
+        return None
+    ap = _active_project
+    text = None
+    if ap.exists() and ap.suffix.lower() == ".sumo":
+        import zipfile
+        try:
+            with zipfile.ZipFile(ap, "r") as zf:
+                if "parameters.txt" in zf.namelist():
+                    text = zf.read("parameters.txt").decode("utf-8", errors="replace")
+        except Exception:
+            text = None
+    if text is None:
+        sibling = ap.with_name("parameters.txt")
+        if sibling.is_file():
+            try:
+                text = sibling.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                text = None
+    if not text:
+        return None
+    parsed = _so.read_parameters_txt(text)
+    return parsed["constant"].get(var)
+
+
+def _ss_lookup(var: str):
+    """Walk the candidate .ss / state.xml paths and return the first hit.
+    Returns the value (scalar or list) or raises KeyError(var) if absent."""
+    # Constant-input parameters live in parameters.txt, not .ss / state.xml.
+    if "__param__" in var:
+        v = _params_txt_lookup(var)
+        if v is not None:
+            return v
+
+    try:
+        import sumo_offline as _so  # local import — module ships alongside us
+    except Exception:
+        _so = None
+
+    for kind, target, member in _candidate_ss_paths():
+        if kind == "zip":
+            if not target or not target.exists() or _so is None:
+                continue
+            try:
+                data = _so.read_ss_cached(target, member)
+            except Exception:
+                continue
+            if var in data:
+                return data[var]
+        else:
+            if not target or not target.is_file():
+                continue
+            # .ss files: prefer sumo_offline if available, else hand-parse.
+            text = None
+            try:
+                text = target.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
+            if _so is not None and target.suffix == ".ss":
+                data = _so.parse_ss_xml(text)
+                if var in data:
+                    return data[var]
+            else:
+                # state.xml fallback — scan for the symbol attribute.
+                try:
+                    tree = ET.fromstring(text)
+                except Exception:
+                    continue
+                for el in tree.iter():
+                    name = el.get("name") or el.get("symbol")
+                    if name != var:
+                        continue
+                    raw = el.text or (el.find("value").text if el.find("value") is not None else "")
+                    raw = (raw or "").strip()
+                    if ";" in raw:
+                        try:
+                            return [float(x) for x in raw.split(";")]
+                        except ValueError:
+                            return raw
+                    try:
+                        return float(raw)
+                    except ValueError:
+                        return raw
+    raise KeyError(var)
+
+
+def _get(self, var):
+    """Resolve a Sumo state-variable name to a value without DTT.
+
+    Priority order:
+      1. _param_overrides (anything the caller set this session)
+      2. Active project's laststeadyrun.ss / lastdynamicrun.ss
+      3. Sibling state.xml or MCP-root state.xml
+
+    Raises KeyError(var) if no source has the variable.
+    """
+    with _lock:
+        if var in _param_overrides:
+            return _param_overrides[var]
+    return _ss_lookup(var)
+
+
 def install():
     """Apply the monkey-patch. Idempotent."""
     if ds is None:
@@ -157,6 +293,9 @@ def install():
         if not hasattr(ds.SumoScheduler, "getVariableNames"):
             ds.SumoScheduler.getVariableNames = _getVariableNames
             patched.append("getVariableNames")
+        if not hasattr(ds.SumoScheduler, "get"):
+            ds.SumoScheduler.get = _get
+            patched.append("get")
     except Exception as exc:
         return {"installed": False, "reason": f"patch failed: {exc!r}"}
     return {

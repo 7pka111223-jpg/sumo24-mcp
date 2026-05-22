@@ -7,11 +7,10 @@ for use with Claude. Built on the Dynamita scheduler.py Python API.
 Prerequisites:
   - SUMO24 installed with DTT addon (SumoDTT24.dya)
   - DTT license (standalone+DTT or container+DTT)
-  - `dynamita` folder copied to the repo root from your SUMO installation:
-      C:\Program Files\Dynamita\SUMO24\PythonAPI\dynamita\
-  - sumoproject.dll and state.xml in the repo root (or point SUMO_DLL / SUMO_STATE
-    env vars at your files — see install.ps1 and examples/qaha-wwtp/ for reference)
-  - Python packages: mcp  (run install.ps1 or: pip install -r requirements.txt)
+  - `dynamita` folder is at the parent directory level (MCP/dynamita/)
+  - sumoproject.dll extracted from "Verified BOD.sumo" via prepare_project.py
+  - state.xml already present at MCP/state.xml
+  - Python packages: mcp
 
 Run:
   python server.py
@@ -103,10 +102,10 @@ except Exception as _e_dte:  # pragma: no cover
 # â”€â”€ Resolve absolute paths relative to this script â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 _HERE = Path(__file__).parent             # repo root (sumo24-mcp/)
 
-# lib/ contains schematic_parser, sumo_pack, etc.
+# lib/ contains helper modules (sumo_compiler, sumo_offline, academic_bundle, etc.)
 if str(_HERE / "lib") not in sys.path:
     sys.path.insert(0, str(_HERE / "lib"))
-# dynamita/ lives at repo root — already findable once _HERE is on path
+# dynamita/ lives at repo root -- already findable once _HERE is on path
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
@@ -126,7 +125,7 @@ try:
         print("[WARN] dynamita_compat shim failed: " + repr(_e))
 except ImportError:
     DTT_AVAILABLE = False
-    print(“[WARN] dynamita package not found — expected at: “ + str(_HERE / “dynamita”))
+    print("[WARN] dynamita package not found â€“ expected at: " + str(_MCP_DIR / "dynamita"))
 
 # â”€â”€ Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CONFIG = {
@@ -3260,6 +3259,59 @@ async def list_tools() -> list[types.Tool]:
             },
         ),
         types.Tool(
+            name="get_state_variables",
+            description=(
+                "Bulk read of many state variables in a single tool call. "
+                "Returns {values: {var: value_or_null}, missing: [...]}. "
+                "Use this instead of N separate get_state_variable calls — it "
+                "collapses N round-trips into 1 and works against the offline "
+                "fallback (laststeadyrun.ss / lastdynamicrun.ss) when DTT is "
+                "not live."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "variables": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Full SumoCore variable names to read.",
+                    },
+                    "sumo_path": {
+                        "type": "string",
+                        "description": "Optional .sumo path to seed the offline lookup chain. If omitted, the active project is used.",
+                    },
+                },
+                "required": ["variables"],
+            },
+        ),
+        types.Tool(
+            name="extract_sumo_data",
+            description=(
+                "Offline one-shot extractor for a .sumo project archive. "
+                "Returns the full bundle an academic report needs: design "
+                "parameters, dynamic influent statistics, steady-state and "
+                "dynamic-final effluent quality (per clarifier), bioreactor "
+                "MLSS / DO per CSTR zone, and biomass composition. Reads the "
+                "zip directly — no SUMO24 GUI / DTT required. Replaces dozens "
+                "of separate get_state_variable / PowerShell calls."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sumo_path": {
+                        "type": "string",
+                        "description": "Absolute path to the .sumo project file.",
+                    },
+                    "include": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional subset of keys to return ('parameters', 'influent_design', 'influent_dynamic', 'effluent', 'bioreactor', 'biomass'). Default returns all.",
+                    },
+                },
+                "required": ["sumo_path"],
+            },
+        ),
+        types.Tool(
             name="search_variables",
             description="Case-insensitive substring search across all variable and parameter names.",
             inputSchema={
@@ -3586,11 +3638,21 @@ async def list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="extract_dll",
-            description="Locate and register a compiled sumoproject.dll in the project directory or an explicit path.",
+            description=(
+                "Locate and register a compiled sumoproject.dll. Accepts: "
+                "(a) an explicit .dll path; (b) a .sumo project file — in "
+                "which case sumoproject.dll is unzipped from the archive "
+                "alongside it (a stale sibling DLL is backed up first); "
+                "(c) omitted — scans the project dir and cwd."
+            ),
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "output_path": {"type": "string", "description": "Optional explicit path to the .dll file. If omitted, scans the project dir and cwd.", "default": ""},
+                    "output_path": {
+                        "type": "string",
+                        "description": "Path to a .dll, or a .sumo file to unzip the bundled DLL from. Omit to auto-discover.",
+                        "default": "",
+                    },
                 },
             },
         ),
@@ -4331,6 +4393,29 @@ async def list_tools() -> list[types.Tool]:
                 "title":{"type":"string"},
                 "footnote":{"type":"string"}
             },"required":["headers","rows"]},
+        ),
+        types.Tool(
+            name="export_academic_bundle",
+            description=(
+                "One-shot academic export for a .sumo project. Generates the "
+                "4 booktabs Word tables (influent, effluent + Law 48 "
+                "compliance, bioreactor, removal), 4 publication figures "
+                "(PNG + PDF), a 6-sheet Excel workbook, and a combined CSV "
+                "— all from a single .sumo file, with no SUMO24 GUI / DTT "
+                "required. Reads laststeadyrun.ss + lastdynamicrun.ss + "
+                "parameters.txt + Influent TSVs directly. Replaces dozens "
+                "of separate get_state_variable + export_* calls."
+            ),
+            inputSchema={"type":"object","properties":{
+                "sumo_path":      {"type":"string","description":"Absolute path to the .sumo project file."},
+                "output_dir":     {"type":"string","description":"Directory to write all outputs into (created if missing)."},
+                "plant_name":     {"type":"string","description":"Optional plant name for table captions."},
+                "scenario_label": {"type":"string","description":"Optional scenario label (e.g. 'BOD shock 8 hrs, no treatment'). Defaults to the .sumo file stem."},
+                "include_figures":{"type":"boolean","default":True,"description":"Generate PNG + PDF figures."},
+                "include_excel":  {"type":"boolean","default":True,"description":"Generate 6-sheet Excel workbook."},
+                "include_csv":    {"type":"boolean","default":True,"description":"Generate combined CSV summary."},
+                "include_docx":   {"type":"boolean","default":True,"description":"Generate 4 booktabs Word tables."},
+            },"required":["sumo_path","output_dir"]},
         ),
         types.Tool(
             name="export_latex_results_table",
@@ -5540,6 +5625,53 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             return [types.TextContent(type="text", text=json.dumps(
                 {"error": str(e), "variable": var}, indent=2))]
 
+    if name == "get_state_variables":
+        variables = arguments.get("variables") or []
+        sumo_path = arguments.get("sumo_path")
+        # Seed the offline fallback chain with the supplied .sumo path so the
+        # shim's _get() can find laststeadyrun.ss / parameters.txt inside it.
+        if sumo_path:
+            try:
+                import dynamita_compat as _dc
+                _dc.set_active_project(sumo_path)
+            except Exception:
+                pass
+        values: dict = {}
+        missing: list = []
+        try:
+            ds_ref = _make_ds()
+            for v in variables:
+                try:
+                    values[v] = ds_ref.sumo.get(v)
+                except Exception:
+                    values[v] = None
+                    missing.append(v)
+        except Exception as e:
+            return [types.TextContent(type="text", text=json.dumps(
+                {"error": str(e), "variables": variables}, indent=2))]
+        return [types.TextContent(type="text", text=json.dumps(
+            {"count": len(variables), "found": len(variables) - len(missing),
+             "missing": missing, "values": values}, indent=2, default=str))]
+
+    if name == "extract_sumo_data":
+        try:
+            import sumo_offline as _so
+        except Exception as e:
+            return [types.TextContent(type="text", text=json.dumps(
+                {"ok": False, "error": f"sumo_offline import failed: {e!r}"},
+                indent=2))]
+        sumo_path = arguments["sumo_path"]
+        include = arguments.get("include")
+        bundle = _so.extract_sumo_data(sumo_path)
+        if include and isinstance(include, list) and bundle.get("ok"):
+            keep_meta = {"ok", "sumo_path", "member_count",
+                         "dll_present_in_zip", "has_steady", "has_dynamic"}
+            filtered = {k: v for k, v in bundle.items()
+                        if k in keep_meta or k in include}
+            bundle = filtered
+        return [types.TextContent(type="text", text=json.dumps(
+            bundle, indent=2, default=str))]
+
     if name == "search_variables":
         keyword = arguments["keyword"]
         try:
@@ -6225,8 +6357,33 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         try:
             output_path = arguments.get("output_path", "")
             dll_path = None
-            search_dirs = []
-            if output_path and Path(output_path).exists():
+            search_dirs: list = []
+            extracted_from_zip = False
+            # CASE A: caller passed a .sumo file — unzip sumoproject.dll out of it.
+            if output_path and output_path.lower().endswith(".sumo") and Path(output_path).exists():
+                sumo_file = Path(output_path)
+                sibling = sumo_file.with_name("sumoproject.dll")
+                # If a stale DLL already sits next to it, back it up first.
+                import zipfile as _zf
+                if _zf.is_zipfile(sumo_file):
+                    with _zf.ZipFile(sumo_file, "r") as zf:
+                        if "sumoproject.dll" in zf.namelist():
+                            if sibling.exists():
+                                bak = sibling.with_suffix(
+                                    ".dll.bak_" + datetime.now().strftime("%Y%m%d_%H%M%S"))
+                                try:
+                                    shutil.copy2(sibling, bak)
+                                except Exception:
+                                    pass
+                            with zf.open("sumoproject.dll") as src, open(sibling, "wb") as dst:
+                                shutil.copyfileobj(src, dst)
+                            dll_path = sibling
+                            extracted_from_zip = True
+                if not dll_path:
+                    # Caller passed an existing .dll path directly.
+                    if Path(output_path).suffix.lower() == ".dll":
+                        dll_path = Path(output_path)
+            elif output_path and Path(output_path).exists():
                 dll_path = Path(output_path)
             else:
                 search_dirs = [Path.cwd()]
@@ -6253,6 +6410,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     "dll_registered": str(dll_path),
                     "size_kb":  round(dll_path.stat().st_size / 1024, 1),
                     "modified": datetime.fromtimestamp(dll_path.stat().st_mtime).isoformat(),
+                    "extracted_from_zip": extracted_from_zip,
                 }
         except Exception as e:
             result = {"error": str(e)}
@@ -8492,6 +8650,27 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         )
         return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
 
+    if name == "export_academic_bundle":
+        try:
+            import academic_bundle as _ab
+        except Exception as e:
+            return [types.TextContent(type="text", text=json.dumps(
+                {"ok": False, "error": f"academic_bundle import failed: {e!r}"},
+                indent=2))]
+        include_docx = bool(arguments.get("include_docx", True))
+        writer = _exp_academic_results_docx if (include_docx and _DOCX_AVAILABLE) else None
+        result = _ab.build_bundle(
+            sumo_path=arguments["sumo_path"],
+            output_dir=arguments["output_dir"],
+            plant_name=arguments.get("plant_name"),
+            scenario_label=arguments.get("scenario_label"),
+            include_figures=bool(arguments.get("include_figures", True)),
+            include_excel=bool(arguments.get("include_excel", True)),
+            include_csv=bool(arguments.get("include_csv", True)),
+            docx_writer=writer,
+        )
+        return [types.TextContent(type="text", text=json.dumps(result, indent=2, default=str))]
+
     if name == "export_latex_results_table":
         result = _exp_latex_results_table(
             arguments["headers"],
@@ -10097,15 +10276,41 @@ def _exp_check_dll_companion(sumo_path: str) -> dict:
     if dll.exists():
         sz = dll.stat().st_size
         return {"present": True, "dll_path": str(dll), "size_bytes": sz, "ok": sz > 0}
-    # search the parent tree for any sumoproject.dll
+    # Look inside the .sumo zip itself — SUMO24 bundles sumoproject.dll there.
+    dll_in_zip = False
+    dll_in_zip_size = 0
+    try:
+        import zipfile as _zf
+        if _zf.is_zipfile(p):
+            with _zf.ZipFile(p, "r") as zf:
+                for info in zf.infolist():
+                    if info.filename == "sumoproject.dll":
+                        dll_in_zip = True
+                        dll_in_zip_size = info.file_size
+                        break
+    except Exception:
+        pass
+    # Also search the parent tree as a last resort.
     candidates = list(p.parent.parent.rglob("sumoproject.dll")) if p.parent.parent else []
-    return {
+    out = {
         "present": False,
         "dll_path_expected": str(dll),
         "ok": False,
+        "dll_in_zip": dll_in_zip,
+        "dll_in_zip_size": dll_in_zip_size if dll_in_zip else None,
         "candidates_found_elsewhere": [str(c) for c in candidates][:10],
-        "fix": "Copy one of the candidate DLLs to the expected path, or run prepare_project.py to extract a fresh DLL.",
     }
+    if dll_in_zip:
+        out["fix"] = (
+            "DLL is bundled inside the .sumo zip — call extract_dll with "
+            "output_path set to this .sumo file to unpack it alongside."
+        )
+    else:
+        out["fix"] = (
+            "Copy one of the candidate DLLs to the expected path, or run "
+            "prepare_project.py to extract a fresh DLL."
+        )
+    return out
 
 
 _EMPTY_STATE_XML = (
