@@ -92,10 +92,14 @@ sumo24-mcp/
 │   ├── prepare_project.py
 │   └── pipeline/
 ├── examples/
-│   └── qaha-wwtp/             ← Example: Qaha WWTP digital twin
+│   ├── qaha-wwtp/             ← Example: Qaha WWTP digital twin
+│   │   ├── README.md
+│   │   ├── sumoproject.dll
+│   │   └── state.xml
+│   └── mcp_use_client/        ← Example: drive the server with mcp-use (no Claude Desktop)
 │       ├── README.md
-│       ├── sumoproject.dll
-│       └── state.xml
+│       ├── demo_client.py
+│       └── requirements.txt
 ├── docs/                      ← Tool reference docs
 └── outputs/                   ← Simulation results (git-ignored)
 ```
