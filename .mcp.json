@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "SUMO24MCPv2": {
+      "command": "python",
+      "args": ["server.py"]
+    }
+  }
+}
