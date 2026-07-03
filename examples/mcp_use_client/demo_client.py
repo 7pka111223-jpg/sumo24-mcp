@@ -21,7 +21,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 async def main() -> None:
     config = {
         "mcpServers": {
-            "sumo24": {
+            "SUMO24MCPv2": {
                 "command": sys.executable,
                 "args": [str(REPO_ROOT / "server.py")],
             }
@@ -32,10 +32,10 @@ async def main() -> None:
     await client.create_all_sessions()
 
     try:
-        session = client.get_session("sumo24")
+        session = client.get_session("SUMO24MCPv2")
 
         tools = await session.list_tools()
-        print(f"Discovered {len(tools)} tool(s) on the sumo24 server:")
+        print(f"Discovered {len(tools)} tool(s) on the SUMO24MCPv2 server:")
         for tool in tools:
             print(f"  - {tool.name}: {tool.description}")
 
