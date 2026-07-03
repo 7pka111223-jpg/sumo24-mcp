@@ -67,7 +67,7 @@ This finds a working Python, installs `mcp`, smoke-tests the server, and writes 
 
 ### 5. Restart Claude Desktop
 
-Fully quit (right-click tray icon → **Quit**) and reopen. You should see **sumo24** in the tools panel.
+Fully quit (right-click tray icon → **Quit**) and reopen. You should see **SUMO24MCPv2** in the tools panel.
 
 ---
 
@@ -92,10 +92,14 @@ sumo24-mcp/
 │   ├── prepare_project.py
 │   └── pipeline/
 ├── examples/
-│   └── qaha-wwtp/             ← Example: Qaha WWTP digital twin
+│   ├── qaha-wwtp/             ← Example: Qaha WWTP digital twin
+│   │   ├── README.md
+│   │   ├── sumoproject.dll
+│   │   └── state.xml
+│   └── mcp_use_client/        ← Example: drive the server with mcp-use (no Claude Desktop)
 │       ├── README.md
-│       ├── sumoproject.dll
-│       └── state.xml
+│       ├── demo_client.py
+│       └── requirements.txt
 ├── docs/                      ← Tool reference docs
 └── outputs/                   ← Simulation results (git-ignored)
 ```
@@ -151,7 +155,7 @@ Full tool reference: [`docs/`](docs/)
 
 **License error** — Confirm your `dynaMIC` license includes the DTT sub-type.
 
-**`sumo24` not visible in Claude** — Fully quit Claude Desktop (not just close the window) before restarting. Check logs at `%APPDATA%\Claude\logs\mcp-server-sumo24*.log`.
+**`SUMO24MCPv2` not visible in Claude** — Fully quit Claude Desktop (not just close the window) before restarting. Check logs at `%APPDATA%\Claude\logs\mcp-server-SUMO24MCPv2*.log`.
 
 **Variable not found** — Variable names are case-sensitive and use double-underscore separators (e.g. `Sumo__Plant__Aeration__param__V`). Use the SUMO Core Window to verify exact names.
 
