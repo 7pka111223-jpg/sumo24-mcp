@@ -19,7 +19,7 @@ venv/
 env/
 
 # Claude local config
-.claude/
+.claude/settings.local.json
 
 # OS
 .DS_Store
