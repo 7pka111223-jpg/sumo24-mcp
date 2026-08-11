@@ -20,7 +20,7 @@ An MCP (Model Context Protocol) server that exposes the SUMO24 Digital Twin Tool
 ### 1. Clone the repo
 
 ```powershell
-git clone https://github.com/<your-username>/sumo24-mcp.git
+git clone https://github.com/7pka111223-jpg/sumo24-mcp.git
 cd sumo24-mcp
 ```
 
