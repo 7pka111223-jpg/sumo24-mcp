@@ -1,12 +1,12 @@
 # =============================================================================
 # SUMO24 MCP Server - Windows diagnostic
 # =============================================================================
-# Checks the five things that typically stop Claude Desktop from seeing 'sumo24':
+# Checks the five things that typically stop Claude Desktop from seeing 'SUMO24MCPv2':
 #   1. Python is findable and not the Microsoft Store stub
 #   2. 'mcp' package is importable by that Python
 #   3. server.py imports cleanly (no syntax / dependency errors)
 #   4. claude_desktop_config.json exists at the right path and is valid JSON
-#   5. The 'sumo24' entry points at files that actually exist
+#   5. The 'SUMO24MCPv2' entry points at files that actually exist
 #
 # Usage:
 #   powershell -ExecutionPolicy Bypass -File .\diagnose.ps1
@@ -106,8 +106,8 @@ Check "claude_desktop_config.json exists and is valid JSON" {
         return $false
     }
     if (-not $cfg.mcpServers) { Write-Host "   No 'mcpServers' key"; return $false }
-    if (-not $cfg.mcpServers.sumo24) { Write-Host "   No 'sumo24' entry under mcpServers"; return $false }
-    $entry = $cfg.mcpServers.sumo24
+    if (-not $cfg.mcpServers.SUMO24MCPv2) { Write-Host "   No 'SUMO24MCPv2' entry under mcpServers"; return $false }
+    $entry = $cfg.mcpServers.SUMO24MCPv2
     Write-Host ("   command: {0}" -f $entry.command)
     Write-Host ("   args   : {0}" -f ($entry.args -join ' '))
     return $true
@@ -126,14 +126,14 @@ Check "Referenced files exist (server.py, state.xml, sumoproject.dll)" {
 # --- MCP log tail ------------------------------------------------------------
 Write-Host "-- Recent Claude MCP log output (if any)" -ForegroundColor Cyan
 if (Test-Path $LogsDir) {
-    $log = Get-ChildItem $LogsDir -Filter "mcp-server-sumo24*.log" -ErrorAction SilentlyContinue |
+    $log = Get-ChildItem $LogsDir -Filter "mcp-server-SUMO24MCPv2*.log" -ErrorAction SilentlyContinue |
            Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if ($log) {
         Write-Host "   File: $($log.FullName)"
         Write-Host "   --- last 30 lines ---"
         Get-Content $log.FullName -Tail 30 | ForEach-Object { Write-Host "   $_" }
     } else {
-        Write-Host "   No sumo24 log file yet. Start Claude Desktop at least once after install."
+        Write-Host "   No SUMO24MCPv2 log file yet. Start Claude Desktop at least once after install."
     }
 } else {
     Write-Host "   $LogsDir does not exist yet - Claude Desktop hasn't created it."

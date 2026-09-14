@@ -12,7 +12,7 @@
 #   cd <your-clone-of-sumo24-mcp>
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1
 #
-# Re-run safe: overwrites only the 'sumo24' entry in the Claude config; other
+# Re-run safe: overwrites only the 'SUMO24MCPv2' entry in the Claude config; other
 # MCP servers you had registered are preserved.
 # =============================================================================
 
@@ -215,7 +215,7 @@ if (-not $existing.mcpServers) {
 
 # Convert sumo entry into a proper PSCustomObject
 $sumoObj = [PSCustomObject]$sumoEntry
-$existing.mcpServers | Add-Member -NotePropertyName "sumo24" -NotePropertyValue $sumoObj -Force
+$existing.mcpServers | Add-Member -NotePropertyName "SUMO24MCPv2" -NotePropertyValue $sumoObj -Force
 
 $json = $existing | ConvertTo-Json -Depth 10
 $json | Set-Content -Path $ConfigPath -Encoding UTF8
@@ -231,11 +231,11 @@ Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Fully quit Claude Desktop (right-click tray icon -> Quit)."
 Write-Host "  2. Start Claude Desktop again."
-Write-Host "  3. Open a chat - you should see 'sumo24' in the tools list."
+Write-Host "  3. Open a chat - you should see 'SUMO24MCPv2' in the tools list."
 Write-Host ""
-Write-Host "If 'sumo24' still doesn't appear, check the MCP logs at:"
+Write-Host "If 'SUMO24MCPv2' still doesn't appear, check the MCP logs at:"
 Write-Host "  $env:APPDATA\Claude\logs\"
-Write-Host "Look for files starting with 'mcp-server-sumo24'."
+Write-Host "Look for files starting with 'mcp-server-SUMO24MCPv2'."
 Write-Host ""
 Write-Host "To re-diagnose, run:  .\diagnose.ps1" -ForegroundColor Cyan
 Write-Host ""
