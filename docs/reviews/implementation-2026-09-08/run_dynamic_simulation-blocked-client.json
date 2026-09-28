@@ -1,0 +1,13 @@
+{
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"ok\": false, \"error\": \"SUMO24 cannot launch native workers inside this MCP client's Windows Job Object: the client does not permit process breakaway (native CreateProcess error 5). Use a client/launcher configured to permit SUMO worker processes. The server does not change the client's process policy. Changing the SUMO directory will not fix this client restriction. Offline tools remain available.\", \"operation_id\": \"87cf295b841845639af65b3851f18879\"}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": true
+}

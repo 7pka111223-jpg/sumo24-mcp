@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "kind": "compiler",
+  "release_id": "local-compiler",
+  "files": {
+    "build\\Model base\\Focus models\\Sumo2C.xlsm": "4ebf2c81ec4bb6b753d59b928c8396a0f8fb8ff746b90ee83d2d8dbeef7e8be5",
+    "build\\Plant classes\\Plant.xlsx": "362111bb6177cd9f00ddae68c14c4c69ce0a1fefbe20785318b8c9590589adaa",
+    "build\\Plant instances\\dynasand_release.xlsx": "ac34f9dd895ec41e4fa8c7f32cd0989d0710845da090ccb8d7f2cb73538c45b1",
+    "build\\Process units\\DynaSand\\DynaSand Group Info.xlsx": "dbfcb4ca00988e654a337151caaa6c9cc73e5ff80422d26899dbc4852a33de5a",
+    "build\\Process units\\DynaSand\\HH_DynaSand_v1.xlsx": "bfd1dbdc2165d36347e1ced0be1a27a8e441fe06791e9356073c5e665042f96a",
+    "build\\Process units\\DynaSand\\State influent.xlsx": "93fcd3e4e66d0e3c02a4eff6d1300ece3132938615b5874e5e1dd21e03de2ef3",
+    "build\\System files\\compatibility.xlsx": "8aa9e6963e6a3fb0509232a5d55fe99cac3912eec4d6af1544bfbc1076ea5a0e",
+    "build\\System files\\systemcode.xlsx": "a6e1fb58a9af6913227fc1adac7120400b67c0b98fabf763834e0d25faee5ee2",
+    "build\\System files\\systemcode_model_Sumo.xlsx": "54eda9a92998ed39e3af21ea7f82bbd952b8f9c1827e4a5df63a843d256460c6",
+    "unit_spec.json": "52a5bcea13f6c559b772a8cde8154993dee1fbd59f5ef793f6f5f5e45161630e",
+    "artifacts\\model.xml": "0fa616ece124100612645cc6d1b551bba427245810365fb04f051e87d13ec501",
+    "artifacts\\model.dll": "523d7695923b8e456e7481dfb47411d2c6bb7b49643e4df875e721b52a531783"
+  },
+  "dll": "artifacts\\model.dll",
+  "xml": "artifacts\\model.xml",
+  "external_files": {
+    "D:\\SUMO24\\SMT24.exe": "add2fa4ed9fb3ea0167da499ccee871e78c998edc6b6c1da4b061c6d37453998"
+  }
+}

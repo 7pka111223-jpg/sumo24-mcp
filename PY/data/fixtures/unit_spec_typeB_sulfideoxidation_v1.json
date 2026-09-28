@@ -1,0 +1,635 @@
+{
+  "$comment": "Type B fixture — a novel aerobic sulfide-oxidizing bioreactor (new biology: new biomass XSOB and new sulfate SV SSO4, new Gujer rows, forked model base). Illustrative schema-shape example only: kinetic values are placeholders for conformance testing, not measured or cited, and MUST NOT be compiled as-is. See the answer's Fixtures section.",
+  "schema_version": 1,
+  "identity": {
+    "name": "SulfideOxidation",
+    "qualified_name": "HH_SulfideOxidation_v1",
+    "version": 1,
+    "supersedes": null,
+    "category": "Custom",
+    "description": "Aerobic oxidation of dissolved sulfide to sulfate by a novel sulfur-oxidizing-bacteria guild. Introduces the biomass XSOB and the sulfate state variable SSO4, plus their Gujer rows, on a fork of Sumo2C."
+  },
+  "routing": {
+    "routed_as": "B",
+    "routing_evidence": [
+      "description names a biological conversion (aerobic sulfide oxidation) not present in any shipped base",
+      "the oxidizer guild has no state variable in the shipped base (no XSOB)",
+      "the product sulfate (SSO4) is not a shipped Sumo2C component"
+    ],
+    "routing_confirmed_by_user": true,
+    "routing_confirmed_at": "2026-09-06T12:00:00Z"
+  },
+  "classification": {
+    "is_composite": false,
+    "composite_evidence": {
+      "sub_units": [],
+      "couplings": []
+    }
+  },
+  "model_binding": {
+    "models": [
+      {
+        "id": "MODEL",
+        "valid": [
+          "HH_SulfideOxidation_v1"
+        ],
+        "invalid": []
+      }
+    ],
+    "model_base": {
+      "fork_from": "Sumo2C",
+      "new_name": "HH_SulfideOxidation_v1",
+      "register_in_systemcode": false
+    }
+  },
+  "ports": [
+    {
+      "symbol": "inp",
+      "name": "Influent",
+      "position": "TL;L;1px;1px",
+      "direction": "in",
+      "phase": "L",
+      "rule": "",
+      "comments": "",
+      "balances": [
+        {
+          "name": "COD",
+          "conserved": true
+        },
+        {
+          "name": "N",
+          "conserved": true
+        },
+        {
+          "name": "P",
+          "conserved": true
+        },
+        {
+          "name": "water",
+          "conserved": true
+        }
+      ]
+    },
+    {
+      "symbol": "outp",
+      "name": "Effluent",
+      "position": "BR;R;-2px;-2px",
+      "direction": "out",
+      "phase": "L",
+      "rule": "",
+      "comments": "",
+      "balances": [
+        {
+          "name": "COD",
+          "conserved": true
+        },
+        {
+          "name": "N",
+          "conserved": true
+        },
+        {
+          "name": "P",
+          "conserved": true
+        },
+        {
+          "name": "water",
+          "conserved": true
+        }
+      ]
+    },
+    {
+      "symbol": "offgas",
+      "name": "Off-gas",
+      "position": "TR;R;1px;-60px",
+      "direction": "out",
+      "phase": "Air",
+      "rule": "",
+      "comments": "Vented headspace gas.",
+      "balances": [
+        {
+          "name": "COD",
+          "conserved": false,
+          "reason": "Gaseous CO2 and volatile sulfur species leave the liquid by design."
+        },
+        {
+          "name": "C",
+          "conserved": false,
+          "reason": "CO2 transfer to headspace."
+        },
+        {
+          "name": "N",
+          "conserved": false,
+          "reason": "N2 stripping to headspace."
+        },
+        {
+          "name": "P",
+          "conserved": true
+        },
+        {
+          "name": "water",
+          "conserved": true
+        }
+      ]
+    }
+  ],
+  "attributes": [
+    {
+      "symbol": "Ntrain",
+      "name": "Number of trains",
+      "default": 1,
+      "rule": "Integer",
+      "comments": ""
+    }
+  ],
+  "parameters": [
+    {
+      "symbol": "L.V",
+      "name": "Reactor volume",
+      "type": "unit",
+      "default": {
+        "value": 2500,
+        "provenance": "user-stated",
+        "source": "illustrative placeholder for schema conformance",
+        "unverified": true
+      },
+      "low_limit": "MinV",
+      "high_limit": "MaxV",
+      "unit": "m3",
+      "decimals": 0,
+      "rule": "",
+      "comment": ""
+    },
+    {
+      "symbol": "SO2_set",
+      "name": "Dissolved-oxygen setpoint",
+      "type": "unit",
+      "default": {
+        "value": 2.0,
+        "provenance": "user-measured",
+        "source": "operating target measured at the plant",
+        "unverified": false
+      },
+      "low_limit": "Zero",
+      "high_limit": "MaxStateVar",
+      "unit": "g O2.m-3",
+      "decimals": 1,
+      "rule": "",
+      "comment": ""
+    },
+    {
+      "symbol": "mu_SOB",
+      "name": "Maximum specific growth rate of SOB",
+      "type": "kinetic",
+      "default": {
+        "value": "REQUIRED",
+        "provenance": "user-measured",
+        "source": "",
+        "unverified": false
+      },
+      "low_limit": "Zero",
+      "high_limit": "BigNumber",
+      "unit": "d-1",
+      "decimals": 2,
+      "rule": "Type(Kinetic)",
+      "comment": "REQUIRED sentinel: the linter fails until the user supplies a real value."
+    },
+    {
+      "symbol": "K_SH2S",
+      "name": "Sulfide half-saturation constant",
+      "type": "kinetic",
+      "default": {
+        "value": "REQUIRED",
+        "provenance": "literature-cited",
+        "source": "placeholder: cite the actual reference before emission",
+        "unverified": true
+      },
+      "low_limit": "SmallNumber",
+      "high_limit": "BigNumber",
+      "unit": "g S.m-3",
+      "decimals": 2,
+      "rule": "Type(Kinetic)",
+      "comment": "Proposed behind the literature opt-in; provenance survives into the emitted workbook."
+    },
+    {
+      "symbol": "Y_SOB",
+      "name": "SOB yield on sulfide",
+      "type": "stoichiometric",
+      "default": {
+        "value": 0.35,
+        "provenance": "user-stated",
+        "source": "user-supplied estimate, no measurement",
+        "unverified": true
+      },
+      "low_limit": "Zero",
+      "high_limit": "One",
+      "unit": "g XSOB.g S-1",
+      "decimals": 3,
+      "rule": "Type(Stoichiometric)",
+      "comment": ""
+    }
+  ],
+  "state_variables": {
+    "introduced": [
+      {
+        "symbol": "SH2S",
+        "name": "Dissolved sulfide (as S)",
+        "initial_value": {
+          "value": 0,
+          "provenance": "user-stated",
+          "source": "assumed absent in influent",
+          "unverified": true
+        },
+        "unit": "g S.m-3",
+        "handling": "Integrated",
+        "phase": "L",
+        "particle_size": "",
+        "group": "Dissolved",
+        "formula": {
+          "elements": {
+            "S": 1,
+            "H": 2
+          },
+          "charge": 0,
+          "provenance": "literature-cited",
+          "source": "H2S; the fixture previously REFERENCED `SH` from Sumo2C, which is water enthalpy (MJ.m-3), not sulfide - Sumo2C contains no sulfur species. See map ticket 06."
+        },
+        "composition": {
+          "basis": "g-per-gCOD",
+          "values": {
+            "COD": 1.0,
+            "C": 0.0,
+            "N": 0.0,
+            "P": 0.0
+          },
+          "provenance": "literature-cited",
+          "source": "H2S carries no C/N/P. Expressed per g COD, as the checker derives. NOTE for the dimensional rung: this SV's unit is g S.m-3, and H2S + 2 O2 -> H2SO4 gives 1.996 g COD per g S - that conversion is a UNIT concern, not a composition one.",
+          "unverified": false
+        }
+      },
+      {
+        "symbol": "XSOB",
+        "name": "Sulfur-oxidizing bacteria biomass",
+        "initial_value": {
+          "value": 10,
+          "provenance": "user-stated",
+          "source": "illustrative inoculum placeholder",
+          "unverified": true
+        },
+        "unit": "g COD.m-3",
+        "handling": "Integrated",
+        "phase": "L",
+        "particle_size": "",
+        "group": "Biomass",
+        "formula": {
+          "elements": {
+            "C": 1,
+            "H": 1.8,
+            "O": 0.5,
+            "N": 0.2
+          },
+          "charge": 0,
+          "provenance": "literature-cited",
+          "source": "placeholder: cite biomass composition reference before emission"
+        },
+        "composition": {
+          "basis": "g-per-gCOD",
+          "values": {
+            "COD": 1.0,
+            "C": 0.35746130952380956,
+            "N": 0.0833732142857143,
+            "P": 0.0
+          },
+          "provenance": "literature-cited",
+          "source": "derived from the declared biomass formula C1H1.8O0.5N0.2 (placeholder formula - cite a biomass composition reference before emission)",
+          "unverified": true
+        }
+      },
+      {
+        "symbol": "SSO4",
+        "name": "Sulfate",
+        "initial_value": {
+          "value": 0,
+          "provenance": "user-stated",
+          "source": "assumed absent in influent",
+          "unverified": true
+        },
+        "unit": "g S.m-3",
+        "handling": "Integrated",
+        "phase": "L",
+        "particle_size": "",
+        "group": "Dissolved",
+        "formula": {
+          "elements": {
+            "S": 1,
+            "O": 4
+          },
+          "charge": -2,
+          "provenance": "user-measured",
+          "source": "fixed stoichiometry of sulfate"
+        },
+        "composition": {
+          "basis": "explicit-not-derivable",
+          "values": {
+            "COD": 0.0,
+            "C": 0.0,
+            "N": 0.0,
+            "P": 0.0
+          },
+          "provenance": "literature-cited",
+          "source": "sulfate is fully oxidised: zero COD, and carries none of the eleven balance elements (S is not among them). Declared because derive_composition() refuses a non-carbon species.",
+          "unverified": false
+        }
+      }
+    ],
+    "referenced": [
+      {
+        "symbol": "SO2",
+        "from_model": "Sumo2C"
+      },
+      {
+        "symbol": "SNHx",
+        "from_model": "Sumo2C"
+      },
+      {
+        "symbol": "SCAT",
+        "from_model": "Sumo2C"
+      }
+    ]
+  },
+  "processes": [
+    {
+      "id": "r1",
+      "name": "SOB aerobic growth on sulfide",
+      "rate_expression": "mu_SOB * XSOB * (SH2S/(K_SH2S + SH2S)) * (SO2/(K_O2 + SO2))",
+      "rate_unit": "g.m-3.d-1",
+      "stoichiometry": [
+        {
+          "component": "SH2S",
+          "coefficient": {
+            "value": "-1/Y_SOB",
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "SO2",
+          "coefficient": {
+            "value": "-(1 - Y_SOB)/Y_SOB",
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "XSOB",
+          "coefficient": {
+            "value": 1,
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "SSO4",
+          "coefficient": {
+            "value": "1/Y_SOB",
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "SNHx",
+          "coefficient": {
+            "value": "-iN,BIO",
+            "provenance": "inherited-model-base",
+            "unverified": false
+          }
+        },
+        {
+          "component": "SCAT",
+          "coefficient": {
+            "value": "charge-balance",
+            "provenance": "inherited-model-base",
+            "unverified": false
+          }
+        }
+      ],
+      "inherited_parameters": [
+        {
+          "parameter": "K_O2",
+          "from_model": "Sumo2C",
+          "role": "oxygen half-saturation constant"
+        },
+        {
+          "parameter": "iN,BIO",
+          "from_model": "Sumo2C",
+          "role": "nitrogen content of biomass"
+        }
+      ],
+      "reaction": "",
+      "rule": "Reactive"
+    },
+    {
+      "id": "r2",
+      "name": "SOB decay",
+      "rate_expression": "b_SOB * XSOB",
+      "rate_unit": "g.m-3.d-1",
+      "stoichiometry": [
+        {
+          "component": "XSOB",
+          "coefficient": {
+            "value": -1,
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "SO2",
+          "coefficient": {
+            "value": -1,
+            "provenance": "user-stated",
+            "unverified": true
+          }
+        },
+        {
+          "component": "SNHx",
+          "coefficient": {
+            "value": "iN,BIO",
+            "provenance": "inherited-model-base",
+            "unverified": false
+          }
+        }
+      ],
+      "inherited_parameters": [
+        {
+          "parameter": "iN,BIO",
+          "from_model": "Sumo2C",
+          "role": "nitrogen content of biomass"
+        }
+      ],
+      "reaction": "",
+      "rule": "Reactive"
+    }
+  ],
+  "code_blocks": [
+    {
+      "section": "State variable initialization",
+      "codelocation": "ZeroTime",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "SV",
+          "name": "State variable",
+          "expression": "MODEL.SV.Name",
+          "unit": "MODEL.SV.Unit",
+          "decimals": 0,
+          "rule": "Handling(Integrated)",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Hydraulics",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "outp..Q",
+          "name": "Effluent flow",
+          "expression": "inp..Q",
+          "unit": "m3.d-1",
+          "decimals": 0,
+          "rule": "",
+          "comment": ""
+        },
+        {
+          "symbol": "HRT",
+          "name": "Hydraulic residence time",
+          "expression": "L.V / inp..Q",
+          "unit": "d",
+          "decimals": 1,
+          "rule": "",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Biokinetic reactions - Gujer matrix",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "rMODEL.Model.j",
+          "name": "Process rate",
+          "expression": "MODEL.Model.Rate",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "Reactive; Non-Polymer",
+          "comment": "Picks up the new r1/r2 rows on the forked base."
+        },
+        {
+          "symbol": "vMODEL.Model.j,SV",
+          "name": "Stoichiometric coefficient",
+          "expression": "MODEL.Model.SV",
+          "unit": "-",
+          "decimals": 0,
+          "rule": "Reactive",
+          "comment": ""
+        },
+        {
+          "symbol": "rate_SV",
+          "name": "Conversion rate",
+          "expression": "vMODEL.Model.j,SV * rMODEL.Model.j",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "sum(MODEL.Model.j); Reactive; Non-Polymer",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Mass balancing",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "dM_L.SV",
+          "name": "Liquid mass change",
+          "expression": "inp..F_L.SV - outp..F_L.SV + rateF_L.SV",
+          "unit": "g.d-1",
+          "decimals": 0,
+          "rule": "Reactive",
+          "comment": ""
+        },
+        {
+          "symbol": "dL.SV_dt",
+          "name": "Concentration change",
+          "expression": "dM_L.SV / L.V",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "Handling(Integrated)",
+          "comment": ""
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "appearance": {
+      "default_icon": "HH_SulfideOxidation_v1.emf",
+      "custom_size": "174x90",
+      "conditional_rows": []
+    },
+    "group_info": {
+      "sorting_priority": 1000,
+      "default_unit": "HH_SulfideOxidation_v1",
+      "hide_name": false
+    },
+    "display": [
+      {
+        "symbol": "L.SV",
+        "name": "State variable",
+        "unit": "g.m-3",
+        "decimals": 2
+      },
+      {
+        "symbol": "L.SH2S",
+        "name": "Sulfide",
+        "unit": "g S.m-3",
+        "decimals": 2
+      },
+      {
+        "symbol": "L.SSO4",
+        "name": "Sulfate",
+        "unit": "g S.m-3",
+        "decimals": 2
+      },
+      {
+        "symbol": "L.XSOB",
+        "name": "SOB biomass",
+        "unit": "g COD.m-3",
+        "decimals": 1
+      }
+    ],
+    "popup": [
+      {
+        "symbol": "L.SH2S",
+        "name": "Sulfide",
+        "unit": "g S.m-3",
+        "decimals": 2
+      },
+      {
+        "symbol": "L.SSO4",
+        "name": "Sulfate",
+        "unit": "g S.m-3",
+        "decimals": 2
+      }
+    ]
+  },
+  "provenance": {
+    "created": "2026-09-06T12:00:00Z",
+    "modified": "2026-09-06T12:00:00Z",
+    "authoring_tool": "describe_unit",
+    "icon": "placeholder",
+    "icon_source": "",
+    "literature_opt_in": true,
+    "machine_stamp": "stoichiometry-verified, kinetically-unverified"
+  }
+}

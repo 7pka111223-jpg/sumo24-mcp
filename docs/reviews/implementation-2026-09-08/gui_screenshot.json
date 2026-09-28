@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "operation_id": "7aa0b0ad84204410964246921e025ca3"
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"ok\": true,\n  \"path\": \"F:\\\\Harness\\\\Orca\\\\SUMO24MCP\\\\MCP\\\\docs\\\\reviews\\\\implementation-2026-09-08\\\\sumo_gui_20260908_181517.png\",\n  \"bbox\": [\n    0,\n    0,\n    1920,\n    1020\n  ],\n  \"size_bytes\": 188097\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,10 @@
+{
+  "server": {
+    "name": "sumo24-mcp",
+    "title": null,
+    "version": "1.27.1",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "tools": 235
+}

@@ -1,0 +1,24 @@
+{
+  "spec_version": "0.1",
+  "name": "hh_cstr_v1",
+  "qualified_name": "HH_CSTR_v1",
+  "version": "v1",
+  "supersedes": null,
+  "category": "Custom",
+  "routed_as": "A",
+  "routing_evidence": "WORKED EXAMPLE: verbatim copy of shipped unit, not an authored unit. No model-base delta.",
+  "routing_confirmed_by_user": false,
+  "provenance": {
+    "origin": "copy",
+    "source_workbook": "D:\\SUMO24\\Process code\\Process units\\10 Bioreactors\\CSTR\\Simple CSTR.xlsx",
+    "copied_verbatim": true,
+    "copied_by": "ticket-10 worked example",
+    "date": "2026-09-06",
+    "note": "Worked example populating the staging layout. NOT an authored unit. Copied byte-for-byte; only the file name and folder placement changed. No fabricated parameters: every value in the workbook is the shipped value."
+  },
+  "is_composite": false,
+  "composite_evidence": null,
+  "placeholder_fields": {
+    "note": "unit_spec.json schema is ticket 05. This file carries the ticket-15 identity fields and a provenance stamp only; the real schema replaces it."
+  }
+}

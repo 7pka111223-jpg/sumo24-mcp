@@ -1,0 +1,17 @@
+{
+  "installed": true,
+  "reason": "ok",
+  "unit_name": "HH_ReviewProbe_v1",
+  "destination": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit",
+  "n_files": 3,
+  "files": [
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.xlsx",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.emf",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH Review Audit Group Info.xlsx"
+  ],
+  "manifest": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\install_manifest.json",
+  "vendor_tree_untouched": "D:\\SUMO24\\Process code",
+  "warnings": [],
+  "IMPORTANT": "SUMO re-scans the merged process-code tree at STARTUP ONLY. This unit will not appear on the drawing board until SUMO is restarted; there is no live refresh to wait for.",
+  "uninstall": "hh_install_process_unit is reversible: uninstall_process_unit(slug) removes exactly the files this manifest lists."
+}

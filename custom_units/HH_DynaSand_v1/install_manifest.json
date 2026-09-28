@@ -1,0 +1,31 @@
+{
+  "installed_at": "2026-09-07T23:47:01",
+  "unit_name": "HH_DynaSand_v1",
+  "category": "90 HH Custom",
+  "family": "HH Custom Units",
+  "slug_dir": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\custom_units\\HH_DynaSand_v1",
+  "destination": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\90 HH Custom\\HH Custom Units",
+  "overlay_root": "D:\\SUMO24\\Dir\\My Process Code",
+  "files": [
+    {
+      "path": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\90 HH Custom\\HH Custom Units\\HH_DynaSand_v1.xlsx",
+      "sha256": "ba2fccdff4df0ffe3a5e6b69160dc7a10dfc0eede5806e569e0d5bf0389efe62",
+      "source": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\custom_units\\HH_DynaSand_v1\\HH_DynaSand_v1.xlsx",
+      "overwrote_existing": true
+    },
+    {
+      "path": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\90 HH Custom\\HH Custom Units\\HH_DynaSand_v1.emf",
+      "sha256": "2276ed6085bb73dc6000b9afd21717ff4ff0779b5360efb65b6d12815c6cc40e",
+      "source": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\custom_units\\HH_DynaSand_v1\\HH_DynaSand_v1.emf",
+      "overwrote_existing": true
+    },
+    {
+      "path": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\90 HH Custom\\HH Custom Units\\HH Custom Units Group Info.xlsx",
+      "sha256": "bb728c3d63f4ac61238de1ca9f94539931f2619f095ed23d86a9a431cc392ccc",
+      "source": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\custom_units\\HH_DynaSand_v1\\HH Custom Units Group Info.xlsx",
+      "overwrote_existing": true
+    }
+  ],
+  "dll_at_install": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\custom_units\\HH_DynaSand_v1\\artifacts\\hh_dynasand_v1.dll",
+  "compiled": true
+}

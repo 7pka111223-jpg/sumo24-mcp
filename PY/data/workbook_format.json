@@ -1,0 +1,225 @@
+{
+  "$schema_note": "Full-corpus format contract for Sumo process-unit workbooks. Measured 2026-09-06 over all 236 process-unit workbooks (5 categories) + 51 contrast workbooks (Energy 11, Hidden 28, Plantwide 12) + 84 Group Info files. openpyxl read-only. Raw census: .scratch/sumoslang-unit-authoring/artifacts/census_full.json. This file supersedes the 02a pilot cut; neither generator nor linter may carry hardcoded header strings of its own.",
+  "writer_library": {
+    "decision": "xlsxwriter",
+    "reason": "openpyxl emits t=inlineStr and drops sharedStrings.xml => SMT 'File error'; xlsxwriter emits t=s + sharedStrings.xml => SMT loads and produces byte-identical XML to Excel COM output.",
+    "xlsm_fallback": "Excel COM via pywin32 (ticket 11)"
+  },
+  "corpus": {
+    "process_unit_categories": {
+      "10 Bioreactors": {"files": 83, "group_info": 16, "units": 67},
+      "20 Flow elements": {"files": 76, "group_info": 16, "units": 60},
+      "30 Separators": {"files": 67, "group_info": 12, "units": 55},
+      "40 Special units": {"files": 13, "group_info": 6, "units": 7},
+      "50 Catchments and rivers": {"files": 66, "group_info": 19, "units": 47}
+    },
+    "units_total_5_categories": 236,
+    "group_info_treewide": 84,
+    "contrast_categories": {"Energy units": 11, "Hidden units": 28, "Plantwide units": 12},
+    "unreadable_workbooks": 0
+  },
+  "sheet_universe": {
+    "universal": ["Help", "Unit"],
+    "near_universal": {"Parameters": 282, "Code": 282},
+    "display_popup": {"Display": 264, "Popup": 264},
+    "optional": {
+      "Structure": 65,
+      "Components": 45,
+      "Predefined charts": 6,
+      "Functions": 1
+    }
+  },
+  "sheet_order": {
+    "canonical": "Help | Unit | Parameters | Code | Display | Popup",
+    "canonical_count": 157,
+    "observed_sequences": {
+      "Help|Unit|Parameters|Code|Display|Popup": 157,
+      "Help|Unit|Parameters|Code|Structure|Display|Popup": 38,
+      "Help|Unit|Parameters|Components|Code|Display|Popup": 37,
+      "Help|Unit|Parameters|Structure|Code": 12,
+      "Help|Unit|Parameters|Code|Predefined charts|Display|Popup": 6,
+      "Help|Unit|Parameters|Structure|Code|Display|Popup": 3,
+      "Help|Unit|Components|Parameters|Code|Display|Popup": 2,
+      "Help|Unit|Parameters": 2,
+      "Help|Unit|Code": 2,
+      "Help|Unit|Parameters|Code|Popup|Display": 1,
+      "Help|Unit": 1,
+      "Help|Unit|Parameters|Code|Display|Popup|Functions": 1
+    },
+    "rules": {
+      "Help_first": "Help is always the first sheet (287/287).",
+      "tail": "Display then Popup are the tail in the canonical order, but NOT universal: Hidden units (no Display/Popup, 12x 'Help|Unit|Parameters|Structure|Code'), ChildU sub-units (no Display/Popup), 2x 'Popup|Display' reversal (SodiumBicarbonate).",
+      "Structure_slot": "dominant position is after Code (38+3+1 of 53); Energy units + Hidden units + Metal chemicals place Structure between Parameters and Code.",
+      "Components_slot": "dominant position between Parameters and Code (37); 2x before Parameters (Drawdown Gen3 Facultative Pond, Gen3 Facultative Pond); 1x after Code (Response time).",
+      "Predefined_charts_slot": "between Code and Display (6/6).",
+      "Functions_slot": "appended last (Noise.xlsx)."
+    }
+  },
+  "sheet_contracts": {
+    "Help": {
+      "note": "free-text, no table header",
+      "cells": {"B2": "unit display name", "C4": "category", "C5/C6": "description lines", "L11": "hyperlink www.dynamita.com"}
+    },
+    "Unit": {
+      "note": "vertical stack of blocks; each block = title in column B, description in C, then header row, then data rows",
+      "block_titles_observed": ["Port", "Attribute", "Model", "Handling", "AttributeGroup", "Appearance"],
+      "header_sequences": {
+        "Ports": "Symbol|Name|Position|Phase|Direction|Image|Size|Rule|Comments",
+        "Ports_no_image": "Symbol|Name|Position|Phase|Direction|Rule|Comments",
+        "Ports_minimal": "Symbol|Name|Position|Phase|Direction|Comments",
+        "Attributes": "Symbol|Name|Default|Rule|Comments",
+        "Attributes_value": "Symbol|Name|Value|Rule|Comments",
+        "Attributes_value_comments": "Symbol|Name|Value|Rule",
+        "Model": "Symbol|Name|Valid|Invalid|Rule|Comments"
+      },
+      "header_counts": {"Symbol|Name|Default|Rule|Comments": 1755, "Symbol|Name|Value|Rule|Comments": 375, "Symbol|Name|Valid|Invalid|Rule|Comments": 287, "Symbol|Name|Position|Phase|Direction|Image|Size|Rule|Comments": 197, "Symbol|Name|Position|Phase|Direction|Rule|Comments": 37, "Symbol|Name|Position|Phase|Direction|Comments": 35, "Symbol|Name|Value|Rule": 41},
+      "header_row": "variable (each block has its own); first block at row 3"
+    },
+    "Parameters": {
+      "note": "vertical stack of section blocks; title in column C of the row above the header",
+      "header": "Symbol|Name|Default|Low limit|High limit|Unit|Decimals|Rule|Principle/comment",
+      "header_count": 2080,
+      "array_variant": "Symbol|Name|Default 1|Default i(2 to n)|Low limit|High limit|Unit|Decimals|Rule|Principle/comment",
+      "array_variant_count": 39,
+      "case_variant": "Symbol|Name|Default|Low Limit|High Limit|Unit|Decimals|Rule|Principle/comment (capital L; 17x)",
+      "header_row": "3 for the first block; variable thereafter"
+    },
+    "Code": {
+      "note": "vertical sections; section title in column A, Codelocation(...) in column D of the section-header row (row above the Symbol header); then header row, then data rows. Codelocation grammar is ticket 03a/03b material: 'Dynamic' is 89.6% of all tags.",
+      "header": "Symbol|Name|Expression|Unit|Decimals|Rule|Principle/comment",
+      "header_count": 6407,
+      "array_variants": [
+        "Symbol|Name|Expression 1|Expression i(2 to n)|Unit|Decimals|Rule|Principle/comment",
+        "Symbol|Name|Expression 1|Expression 2|Expression i(3 to n-1)|Expression n|Unit|Decimals|Rule|Principle/comment",
+        "Symbol|Name|Expression i(1 to n)|Unit|Decimals|Rule|Principle/comment",
+        "Symbol|Name|Expression 1|Expression i(2 to n-1)|Expression n|Unit|Decimals|Rule|Principle/comment"
+      ],
+      "header_row": "variable; first section commonly 4 or 5"
+    },
+    "Display": {
+      "note": "block title in C2, Location(...) in D2; header row 3",
+      "header": "Symbol|Name|Value|Unit|Decimals|Rule|Principle/comment",
+      "header_count": 3942,
+      "short_variant": "Symbol|Name|Value|Unit|Decimals (282x)"
+    },
+    "Popup": {
+      "note": "block title in C2, Location(...) in D2; header row 3",
+      "header": "Symbol|Name|Value|Unit|Decimals|Rule|Principle/comment",
+      "header_count": 2567,
+      "short_variant": "Symbol|Name|Value|Unit|Decimals (167x)"
+    },
+    "Structure": {
+      "note": "two blocks. Block 1: 'Unit components' - sub-model toggles; block 2: 'Internal connection' table. Toggle column set is NOT install-fixed (11 distinct variants observed).",
+      "block1_header_shape": "Unit component|Unit name|Label|<toggle columns>|Models",
+      "block2_header": "Symbol|Label|From|To",
+      "block2_count": 100,
+      "toggle_vocabulary": ["Reactive", "Polymer", "Energy", "CFPcalc", "AlphaPred", "AlphaSet", "SOTECorr_cdisc", "SOTECorr_mdisc", "SOTECorr_pdisc", "SOTECorr_cdome", "SOTECorr_mtube", "SOTECorr_cap", "SOTEFixed_fine", "SOTEFixed_coarse", "SumoBioFilm", "DOCalculated", "DOControl", "OffGasEntry", "AfterPrezone"],
+      "invariant_tail": ["InheritkinPAR", "InheritstoPAR", "InheritequPAR", "Models"],
+      "toggle_variants_seen": 11
+    },
+    "Components": {
+      "note": "ONLY sheet whose table does NOT start in column B - header starts at column C.",
+      "title_cell": "C2",
+      "header": "Symbol|Name|Initial value|Unit|Decimals|Handling",
+      "header_count": 37,
+      "columns": {"Symbol": "C", "Name": "D", "Initial value": "E", "Unit": "F", "Decimals": "G", "Handling": "H"}
+    },
+    "Predefined charts": {
+      "note": "6 units only",
+      "header": "Symbol|Name|Format|Unit|Decimals|Rule|Principle/comment",
+      "format_example": "Line(2pt; red); Point(0pt, circle, red)"
+    },
+    "Functions": {
+      "note": "1 unit only (Plantwide units/Statistics/Noise.xlsx); C++ function definitions",
+      "header": "Symbol|Name|Expression|Rule|Unit"
+    }
+  },
+  "table_grammar": {
+    "block_structure": "each sheet is a vertical stack of blocks; block = optional title row + header row + data rows; blocks separated by blank rows.",
+    "title_cell_by_sheet": {"Code": "A", "Unit": "B", "Parameters": "C", "Display": "C", "Popup": "C", "Components": "C", "Structure_block1": "B", "Structure_block2": "C", "Functions": "C"},
+    "header_row_by_sheet": {"first block on Unit/Parameters/Display/Popup/Structure/Components/Predefined charts": 3, "Code": "variable (first commonly 4-5)", "all later blocks": "variable"},
+    "data_rows": "follow the header until a blank row",
+    "start_column": "B for every table EXCEPT Components (starts at C)",
+    "blank_separator": "blank row separates blocks"
+  },
+  "controlled_vocabularies": {
+    "Direction": {"closed": true, "values": {"in": 276, "out": 389}},
+    "Phase": {"closed": true, "values": {"L": 471, "Air": 69, "Sewer": 63, "River": 42, "Biogas": 20}},
+    "Position": {
+      "closed": false,
+      "mini_language": "{TL|TR|BL|BR};{optional port-point letter: L|R|B};{dx px};{dy px}",
+      "examples": ["BL;;6px;-60px", "TL;L;1px;1px", "BR;R;-2px;-2px"],
+      "distinct_tokens": 86,
+      "note": "a second form '97;50' appears in the Size field of some units - not a position."
+    },
+    "Rule": {
+      "closed": false,
+      "compound_language": true,
+      "note": "semicolon-joined flag tokens; function-call forms; NOT a closed list (1249 distinct).",
+      "flag_tokens": ["Energy", "Reactive", "Inherit", "Hidden", "Constant", "Integer", "pH", "ModelExcluded(...)", "Non-<flag>"],
+      "function_forms": ["Type(Stoichiometric|Equilibrium|Energy|Chargebalance)", "Model(Sumo2C|Sumo2S|Mini_Sumo|...)", "Only(SPO4|GCO2|...)", "Handling(Set)", "SumTo(EnergyCenter)"],
+      "array_markers": ["[n]", "[Top..n]", "[Bottom..n]"],
+      "compound_examples": ["Energy; Centrifugal", "Integer; Energy; Screw", "[n]; Reactive", "InheritstoPAR; Type(Stoichiometric)", "Non-SOTEFixed_fine; Non-SOTEFixed_coarse"]
+    },
+    "limit_sentinels": {
+      "closed": false,
+      "tokens": ["BigNumber", "-BigNumber", "SmallNumber", "MaxStateVar", "MaxFlow", "MinFlow", "MinV", "MaxV", "Zero", "One", "NonDetect", "0"],
+      "model_expandable": ["\"MODEL.PAR.Low limit\"", "\"MODEL.PAR.High limit\"", "\"MODEL.Components.High limit\""],
+      "counts": {"BigNumber": 8720, "MaxStateVar": 2024, "SmallNumber": 1326, "MaxFlow": 267, "MinFlow": 249, "MinV": 157, "MaxV": 147, "Zero": 207, "NonDetect": 81, "One": 54}
+    },
+    "Decimals": {"note": "display-precision integer 0-5 (rare 6); ignored by the SMT; workbook UI convention."}
+  },
+  "group_info_contract": {
+    "files": 84,
+    "sheets": {"Help": 84, "Unit": 84},
+    "unit_sheet": {"C2": "group display name", "header_row": 3, "header": "Symbol|Name|Value|Rule", "rows": {"SortingPriority": "present 84/84, int 70..2000", "DefaultUnit": "present 84/84, names the default unit workbook in the folder", "HideName": "present 8/84, value True (combiner/mapper connectors)"}},
+    "naming": "folder contains '<name> Group Info.xlsx' + one or more unit workbooks; C2 is usually the folder base name; DefaultUnit names the default unit."
+  },
+  "symbol_grammar": {
+    "distinct_symbols": 6751,
+    "shape": "[port..]base[.field][,subscript][]",
+    "separators": {"port": "..", "field": ".", "subscript": ",", "array": "[]"},
+    "examples": ["inp..Q", "outp..F.XTSS", "inp..F.TBOD,5", "Pel,pump", "α[]", "TBOD,5", "ηFLOC,Process"],
+    "unicode": "Greek letters load-bearing (alpha, beta, eta, theta, lambda, kappa, gamma, tau, rho, Delta, Theta); U+019E 'eta-substitute' used throughout the Granular SBR family"
+  },
+  "encoding": {
+    "non_ascii_chars": {
+      "U+019E": 5985,
+      "U+03C1 rho": 1376,
+      "U+03B1 alpha": 1229,
+      "U+03B7 eta": 1136,
+      "U+00B0 degree": 771,
+      "U+0394 Delta": 485,
+      "U+03B5 epsilon": 397,
+      "U+0398 Theta": 341,
+      "U+03B2 beta": 241,
+      "U+00B3 superscript-3": 225,
+      "U+2026 ellipsis": 136,
+      "U+03BB lambda": 52,
+      "U+00B5 micro": 49,
+      "U+00E4/U+00F6 umlauts": 90,
+      "U+03BA kappa": 40,
+      "U+20AC euro": 1,
+      "U+00D7 multiply": 1
+    },
+    "writer_handling": "xlsxwriter writes Unicode natively; the emitter must copy symbols/units verbatim (never transliterate Greek)."
+  },
+  "exceptions": {
+    "Popup_before_Display": "20 Flow elements/Chemicals/SodiumBicarbonate.xlsx orders Popup before Display",
+    "Components_before_Parameters": "Drawdown Gen3 Facultative Pond.xlsx; Gen3 Facultative Pond.xlsx",
+    "Components_after_Code": "Plantwide units/Statistics/Response time.xlsx",
+    "Structure_between_Parameters_and_Code": "Energy units (9), Hidden units (12+), Metal chemicals Al2(SO4)3.xlsx & AlCl3.xlsx",
+    "no_Display_Popup": "Hidden units (mostly Help|Unit|Parameters|Structure|Code); ChildU_TricklingFilter*.xlsx (Help|Unit|Parameters|Code); EmptyInputRiver/Sewer (Help|Unit|Parameters); Model checker PU & SV mapper (Help|Unit|Code); CFP off*.xlsx (Help|Unit)",
+    "Functions_sheet": "Plantwide units/Statistics/Noise.xlsx",
+    "Group_Info_case": "Deflocculator/Deflocculator Group info.xlsx uses lowercase 'info' - excluded from unit corpus by case-insensitive filter",
+    "unicode_unit_spellings": "W/m2 vs W/m\u00b2; m3 vs m\u00b3; %v.v-1 vs %v/v vs v/v%; l.s-1 vs l/s vs l s-1; g.m-3 vs g O2/m3",
+    "typo_units": "kw2 (2x); 'g. d-1' space variants; 'kg .m-3'; 'MJ .kg-1'"
+  },
+  "deliverables_this_ticket": {
+    "format_doc": "docs/sumoslang_workbook_format.md",
+    "format_json": "this file",
+    "unit_vocabulary": "PY/data/unit_vocabulary.json",
+    "census_raw": ".scratch/sumoslang-unit-authoring/artifacts/census_full.json",
+    "roundtrip_harness": ".scratch/sumoslang-unit-authoring/scripts/02b_roundtrip_diff.py"
+  }
+}

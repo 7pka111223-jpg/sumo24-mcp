@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "kind": "source-release",
+  "release_id": "dynasand-1.0.0-20260908",
+  "files": {
+    "DynaSand Group Info.xlsx": "dbfcb4ca00988e654a337151caaa6c9cc73e5ff80422d26899dbc4852a33de5a",
+    "HH_DynaSand_v1.emf": "2276ed6085bb73dc6000b9afd21717ff4ff0779b5360efb65b6d12815c6cc40e",
+    "HH_DynaSand_v1.xlsx": "bfd1dbdc2165d36347e1ced0be1a27a8e441fe06791e9356073c5e665042f96a",
+    "unit_spec.json": "52a5bcea13f6c559b772a8cde8154993dee1fbd59f5ef793f6f5f5e45161630e"
+  },
+  "compiled_outputs": {
+    "xml_sha256": "0fa616ece124100612645cc6d1b551bba427245810365fb04f051e87d13ec501",
+    "dll_sha256": "8f7cd6c80acfdfc78b7f528356ada13a03915ed2443c3fb2f669b897a9378baa"
+  },
+  "validation": {
+    "native_tests": [
+      "positive_flow",
+      "zero_flow"
+    ],
+    "passed": true,
+    "record_sha256": "44f4ab65be9ceeb94744cd0edbcc084eb736bc9443639d7fb41b39ea37aec3e0"
+  }
+}

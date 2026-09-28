@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "dangling": null,
+  "symbols_checked": false,
+  "stage": "run",
+  "reason": "clean: no [ERROR] lines, the XML parses (SYMBOLS NOT CHECKED - a clean run can still carry dangling refs)",
+  "returncode": 0,
+  "returncode_is_not_evidence": true,
+  "smtlog": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\smtlog.txt",
+  "errors": [],
+  "n_errors": 0,
+  "xml": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.xml",
+  "xml_status": "1250933 bytes, parses",
+  "command": [
+    "D:\\SUMO24\\SMT24.exe",
+    "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\Plant instances\\hh_reviewprobe_v1.xlsx",
+    "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.xml"
+  ],
+  "stdout_tail": "",
+  "stderr_tail": ""
+}

@@ -1,0 +1,13 @@
+{
+  "uninstalled": true,
+  "reason": "ok",
+  "removed": [
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.xlsx",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.emf",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH Review Audit Group Info.xlsx"
+  ],
+  "kept": [],
+  "already_missing": [],
+  "directory_removed": true,
+  "IMPORTANT": "SUMO re-scans at STARTUP ONLY - a removed unit stays visible in a running GUI until restart."
+}

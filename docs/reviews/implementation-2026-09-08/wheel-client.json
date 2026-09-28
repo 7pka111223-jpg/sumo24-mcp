@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "sumo24": {
+      "command": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.venv-integration\\Scripts\\python.exe",
+      "args": [
+        "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.venv-integration\\Lib\\site-packages\\sumo24_mcp\\server.py"
+      ],
+      "env": {
+        "SUMO_INSTALL_DIR": "D:\\SUMO24",
+        "SUMO_OUTPUT": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.installation\\outputs",
+        "PYTHONPATH": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.venv-integration\\Lib\\site-packages\\sumo24_mcp;F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.venv-integration\\Lib\\site-packages",
+        "SUMO_DLL": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\sumoproject.dll",
+        "SUMO_STATE": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\state.xml"
+      }
+    }
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "$comment": "Type A fixture — a variable-volume equalization basin (transport/hydraulics, no biology). Illustrative schema-shape example only: values are placeholders for conformance testing, not measured, and MUST NOT be compiled as-is. See the answer's Fixtures section.",
+  "schema_version": 1,
+  "identity": {
+    "name": "EqualizationBasin",
+    "qualified_name": "HH_EqualizationBasin_v1",
+    "version": 1,
+    "supersedes": null,
+    "category": "Custom",
+    "description": "Variable-volume flow equalization basin that smooths diurnal influent flow and equalizes concentration. Pure hydraulics; reuses the Sumo2C model base; introduces no new state variables."
+  },
+  "routing": {
+    "routed_as": "A",
+    "routing_evidence": [
+      "description names only hydraulic storage and flow smoothing",
+      "no conversion or biological process is named",
+      "reuses existing Sumo2C state variables"
+    ],
+    "routing_confirmed_by_user": true,
+    "routing_confirmed_at": "2026-09-06T12:00:00Z"
+  },
+  "classification": {
+    "is_composite": false,
+    "composite_evidence": { "sub_units": [], "couplings": [] }
+  },
+  "model_binding": {
+    "models": [
+      {
+        "id": "MODEL",
+        "valid": ["Sumo2C", "Sumo2", "Sumo2S", "Sumo1", "Mini_Sumo", "Sumo4N"],
+        "invalid": []
+      }
+    ],
+    "model_base": null
+  },
+  "ports": [
+    {
+      "symbol": "inp",
+      "name": "Influent",
+      "position": "TL;L;1px;1px",
+      "direction": "in",
+      "phase": "L",
+      "rule": "",
+      "comments": "",
+      "balances": [
+        { "name": "COD", "conserved": true },
+        { "name": "N", "conserved": true },
+        { "name": "P", "conserved": true },
+        { "name": "water", "conserved": true }
+      ]
+    },
+    {
+      "symbol": "outp",
+      "name": "Effluent",
+      "position": "BR;R;-2px;-2px",
+      "direction": "out",
+      "phase": "L",
+      "rule": "",
+      "comments": "",
+      "balances": [
+        { "name": "COD", "conserved": true },
+        { "name": "N", "conserved": true },
+        { "name": "P", "conserved": true },
+        { "name": "water", "conserved": true }
+      ]
+    },
+    {
+      "symbol": "oflow",
+      "name": "Overflow",
+      "position": "TR;R;1px;-60px",
+      "direction": "out",
+      "phase": "L",
+      "rule": "",
+      "comments": "Overflow weir engaged only when L.V exceeds L.Vmax.",
+      "balances": [
+        { "name": "COD", "conserved": true },
+        { "name": "N", "conserved": true },
+        { "name": "P", "conserved": true },
+        { "name": "water", "conserved": true }
+      ]
+    }
+  ],
+  "attributes": [
+    {
+      "symbol": "Ntrain",
+      "name": "Number of trains",
+      "default": 1,
+      "rule": "Integer",
+      "comments": "Structural, not a physical coefficient."
+    }
+  ],
+  "parameters": [
+    {
+      "symbol": "L.Vtrain",
+      "name": "Volume per train",
+      "type": "unit",
+      "default": {
+        "value": "REQUIRED",
+        "provenance": "user-measured",
+        "source": "",
+        "unverified": false
+      },
+      "low_limit": "MinV",
+      "high_limit": "MaxV",
+      "unit": "m3",
+      "decimals": 0,
+      "rule": "",
+      "comment": "Left as the REQUIRED sentinel: the user has not supplied it yet. The linter fails until this is filled."
+    },
+    {
+      "symbol": "L.Vmin",
+      "name": "Minimum liquid volume",
+      "type": "unit",
+      "default": {
+        "value": 0,
+        "provenance": "user-stated",
+        "source": "design minimum (empty basin)",
+        "unverified": true
+      },
+      "low_limit": "MinV",
+      "high_limit": "MaxV",
+      "unit": "m3",
+      "decimals": 0,
+      "rule": "",
+      "comment": ""
+    },
+    {
+      "symbol": "L.Vmax",
+      "name": "Maximum liquid volume",
+      "type": "unit",
+      "default": {
+        "value": 5000,
+        "provenance": "user-stated",
+        "source": "illustrative placeholder for schema conformance",
+        "unverified": true
+      },
+      "low_limit": "MinV",
+      "high_limit": "MaxV",
+      "unit": "m3",
+      "decimals": 0,
+      "rule": "",
+      "comment": ""
+    }
+  ],
+  "state_variables": {
+    "introduced": [],
+    "referenced": [
+      { "symbol": "SV", "from_model": "Sumo2C" },
+      { "symbol": "XTSS", "from_model": "Sumo2C" }
+    ]
+  },
+  "processes": [],
+  "code_blocks": [
+    {
+      "section": "State variable initialization",
+      "codelocation": "ZeroTime",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "SV",
+          "name": "State variable",
+          "expression": "MODEL.SV.Name",
+          "unit": "MODEL.SV.Unit",
+          "decimals": 0,
+          "rule": "Handling(Integrated)",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Hydraulics",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "outp..Q",
+          "name": "Effluent flow",
+          "expression": "inp..Q - oflow..Q",
+          "unit": "m3.d-1",
+          "decimals": 0,
+          "rule": "",
+          "comment": "Continuity: inflow splits between effluent and overflow."
+        },
+        {
+          "symbol": "dL.V_dt",
+          "name": "Volume change",
+          "expression": "inp..Q - outp..Q - oflow..Q",
+          "unit": "m3.d-1",
+          "decimals": 0,
+          "rule": "",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Gujer matrix",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "rMODEL.Model.j",
+          "name": "Process rate",
+          "expression": "MODEL.Model.Rate",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "Reactive; Non-Polymer",
+          "comment": "Present even though this unit is non-reactive: the base still supplies the matrix."
+        },
+        {
+          "symbol": "vMODEL.Model.j,SV",
+          "name": "Stoichiometric coefficient",
+          "expression": "MODEL.Model.SV",
+          "unit": "-",
+          "decimals": 0,
+          "rule": "Reactive",
+          "comment": ""
+        },
+        {
+          "symbol": "rate_SV",
+          "name": "Conversion rate",
+          "expression": "vMODEL.Model.j,SV * rMODEL.Model.j",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "sum(MODEL.Model.j); Reactive; Non-Polymer",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "section": "Reactor mass balances",
+      "codelocation": "Dynamic",
+      "type": "",
+      "lines": [
+        {
+          "symbol": "dM_L.SV",
+          "name": "Liquid mass change",
+          "expression": "inp..F_L.SV - outp..F_L.SV - oflow..F_L.SV",
+          "unit": "g.d-1",
+          "decimals": 0,
+          "rule": "",
+          "comment": "No rateF_L.SV term: non-reactive."
+        },
+        {
+          "symbol": "dL.SV_dt",
+          "name": "Concentration change",
+          "expression": "dM_L.SV / L.V",
+          "unit": "g.m-3.d-1",
+          "decimals": 0,
+          "rule": "Handling(Integrated)",
+          "comment": ""
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "appearance": {
+      "default_icon": "HH_EqualizationBasin_v1.emf",
+      "custom_size": "174x90",
+      "conditional_rows": []
+    },
+    "group_info": {
+      "sorting_priority": 1000,
+      "default_unit": "HH_EqualizationBasin_v1",
+      "hide_name": false
+    },
+    "display": [
+      { "symbol": "L.V", "name": "Liquid volume", "unit": "m3", "decimals": 0 },
+      { "symbol": "inp..Q", "name": "Influent flow", "unit": "m3.d-1", "decimals": 0 },
+      { "symbol": "outp..Q", "name": "Effluent flow", "unit": "m3.d-1", "decimals": 0 }
+    ],
+    "popup": [
+      { "symbol": "L.V", "name": "Liquid volume", "unit": "m3", "decimals": 0 },
+      { "symbol": "outp..Q", "name": "Effluent flow", "unit": "m3.d-1", "decimals": 0 }
+    ]
+  },
+  "provenance": {
+    "created": "2026-09-06T12:00:00Z",
+    "modified": "2026-09-06T12:00:00Z",
+    "authoring_tool": "describe_unit",
+    "icon": "placeholder",
+    "icon_source": "",
+    "literature_opt_in": false,
+    "machine_stamp": ""
+  }
+}

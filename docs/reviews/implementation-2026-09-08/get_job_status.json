@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "operation_id": "352732f3896c40b998015b05c73b9e60"
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"job_id\": 1,\n  \"status\": \"finished\",\n  \"n_rows\": 25,\n  \"rows_truncated\": false,\n  \"error\": null,\n  \"last_msg\": \"530004 Simulation ended.\",\n  \"summary\": {\n    \"TSS_mgL\": 3.857004557508479,\n    \"BOD5_mgL\": 1.683375821626021,\n    \"COD_mgL\": 32.7275885820061,\n    \"sCOD_mgL\": 28.01175225851023,\n    \"NH4N_mgL\": 0.4251352238778101,\n    \"NOxN_mgL\": 9.852052070806778,\n    \"PO4P_mgL\": 2.347854716241335,\n    \"Q_m3d\": 7234.228959352884,\n    \"time_days\": 0.01,\n    \"observations\": {\n      \"TSS_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__XTSS\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"BOD5_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__TBOD_5\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"COD_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__TCOD\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"sCOD_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__SCOD\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"NH4N_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__SNHx\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"NOxN_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__SNOx\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"PO4P_mgL\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__SPO4\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"Q_m3d\": {\n        \"symbol\": \"Sumo__Plant__Effluent1__Q\",\n        \"unit\": \"m3/d\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      }\n    }\n  }\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

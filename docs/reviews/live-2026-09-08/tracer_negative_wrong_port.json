@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "stage": "setup",
+  "reason": "no shared components between Inflpipe and Influentoutp"
+}

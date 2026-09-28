@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "operation_id": "6d340cd44faa43579d8ee41a4cea0c86"
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"overall\": \"INSUFFICIENT_DATA\",\n  \"parameters\": {\n    \"TSS\": {\n      \"metric\": \"TSS_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": null,\n      \"limit\": 50.0,\n      \"status\": \"INSUFFICIENT_DATA\",\n      \"margin\": null\n    },\n    \"BOD5\": {\n      \"metric\": \"BOD5_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": null,\n      \"limit\": 60.0,\n      \"status\": \"INSUFFICIENT_DATA\",\n      \"margin\": null\n    },\n    \"COD\": {\n      \"metric\": \"COD_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": null,\n      \"limit\": 80.0,\n      \"status\": \"INSUFFICIENT_DATA\",\n      \"margin\": null\n    }\n  },\n  \"law\": \"Egyptian Law 48/1982\"\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "stage": "run",
+  "job_id": 7,
+  "rows": 11,
+  "ended": true,
+  "rejected": [],
+  "last": {
+    "Sumo__Time": 864000,
+    "Sumo__Plant__Inflpipe__Q": 0,
+    "Sumo__Plant__Inflpipe__XTSS": 207.1612837291445,
+    "Sumo__Plant__Inflpipe__XB": 183,
+    "Sumo__Plant__Probeeff__Q": 0,
+    "Sumo__Plant__Probeeff__XTSS": 78.51412653334576,
+    "Sumo__Plant__Probeeff__XB": 69.357,
+    "Sumo__Plant__Probewash__Q": 0,
+    "Sumo__Plant__Probewash__XTSS": 1248.033737404243,
+    "Sumo__Plant__Probewash__XB": 1102.475181818182
+  },
+  "flow_residual": 0,
+  "tss_mass_residual": 0.0
+}

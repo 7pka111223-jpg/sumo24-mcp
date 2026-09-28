@@ -1,0 +1,1076 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sumo24-mcp.local/schema/unit_spec.schema.json",
+  "title": "Group HH custom process-unit spec (unit_spec.json)",
+  "description": "The single source of truth from which every artifact (workbook, plant instance/class, model-base fork, icon) is generated and against which every check in the seven-rung ladder runs. A prose description is never accepted silently: it becomes a spec here, and the human reviews and corrects it before anything is emitted. This is a DRAFT proposal for human approval (ticket 05); the linter's full bidirectional invariants live in ticket 09's code, not only in this JSON Schema.\n\nGovernance carried as first-class structure:\n- The REQUIRED sentinel is the literal string \"REQUIRED\" inside a coefficient's 'value' — an explicit unfilled value, never an absent key.\n- Every coefficient carries 'provenance' from the closed enum {user-measured, user-stated, literature-cited, inherited-model-base}.\n- Routing, composite classification, balance exemptions, and per-process inherited parameters are data, not behaviour — the linter enforces their consistency with the rest of the spec.\n- Volatile fields (timestamps, content_hash) are excluded from the content hash; hashing reuses the discipline in PY/pipeline/hashing.py (sorted keys, separators=(',', ':'), ensure_ascii=False).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "identity",
+    "routing",
+    "classification",
+    "model_binding",
+    "ports",
+    "parameters",
+    "processes",
+    "code_blocks",
+    "provenance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "description": "Version of this schema contract. Bump only with a coordinated tool/linter change."
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 hex over the spec with volatile fields removed (routing.routing_confirmed_at, provenance.created, provenance.modified, and this field itself). Computed with PY/pipeline/hashing.py hash_json discipline (sorted keys, separators=(',', ':'), ensure_ascii=False). Not required — tooling computes and stamps it."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Naming/versioning contract from ticket 15. 'name' + 'version' constitute identity; everything else is content. Changing content increments 'version'; changing 'name' creates a different unit.",
+      "required": [
+        "name",
+        "qualified_name",
+        "version",
+        "category"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Bare human name, no prefix, no version suffix."
+        },
+        "qualified_name": {
+          "type": "string",
+          "pattern": "^HH_.+_v[0-9]+$",
+          "description": "HH_<name>_v<n>. Generated, never user-set. The value used in the workbook, folder name, and plant instance."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Incremented on each regeneration from a corrected spec; never overwrite (ticket 15)."
+        },
+        "supersedes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "qualified_name of the previous version, or null for v1. Enables version-to-plant traceability (ticket 18)."
+        },
+        "category": {
+          "const": "Custom",
+          "description": "Always 'Custom' in cycle 1 (ticket 15)."
+        },
+        "description": {
+          "type": "string",
+          "description": "One-paragraph human summary of what the unit does."
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "description": "Type A/B classification (ticket 19). Routing is data, not behaviour: the linter enforces consistency with the spec's contents in both directions. Never guessed — refuse and ask on ambiguity.",
+      "required": [
+        "routed_as",
+        "routing_evidence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "routed_as": {
+          "enum": [
+            "A",
+            "B"
+          ],
+          "description": "A = new topology/transport unit reusing the existing model base. B = new biology/chemistry with new state variables and Gujer rows (a forked model base)."
+        },
+        "routing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The described processes, variables, or phrases that forced the classification (ticket 19)."
+        },
+        "routing_confirmed_by_user": {
+          "type": "boolean",
+          "default": false,
+          "description": "True only after the user explicitly confirmed the routing during a disambiguation exchange."
+        },
+        "routing_confirmed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ISO-8601 timestamp of user confirmation, null if never confirmed. Volatile — excluded from content_hash."
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "description": "Composite detection (ticket 17). Composites are OUT of cycle 1 with a detecting refusal. The spec carries is_composite + composite_evidence, and NO component list, NO internal connections, NO external port mapping.",
+      "required": [
+        "is_composite"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "is_composite": {
+          "type": "boolean",
+          "description": "True when the description decomposes into several coupled process units. The linter REFUSES is_composite=true in cycle 1, naming the sub-units and couplings, and stating what would be accepted."
+        },
+        "composite_evidence": {
+          "type": "object",
+          "description": "What made it composite (ticket 17 signals).",
+          "additionalProperties": false,
+          "properties": {
+            "sub_units": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "couplings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "model_binding": {
+      "type": "object",
+      "description": "Which biokinetic models the unit declares valid/invalid, and for Type B, the forked custom model base it requires (ticket 04).",
+      "required": [
+        "models"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/model_id"
+          },
+          "description": "Model identifiers (local names). First-listed is the default for shorthand expansion; a custom base should list its ID first (ticket 04)."
+        },
+        "model_base": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/model_base"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Present and object for Type B; null/absent for Type A. The fork declaration only — the actual additions (new SVs, processes, kinetic parameters) live in the top-level state_variables/processes/parameters sections so each coefficient has exactly one home."
+        }
+      }
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/port"
+      },
+      "description": "The Port table contract (ticket 02b). Each port optionally declares which balances it conserves and which it is exempt from (amendment 3) — ticket 07 reads this."
+    },
+    "attributes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attribute"
+      },
+      "description": "Unit-sheet Attribute table. Structural flags/constants, not physical coefficients; their 'default' is not provenance-stamped (see OPEN QUESTIONS)."
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/parameter"
+      },
+      "description": "The Parameters-sheet contract (ticket 02b). 'type' distinguishes unit-level parameters from kinetic/stoichiometric/equilibrium parameters, which are Type-B model-base additions. Every 'default' carries provenance."
+    },
+    "state_variables": {
+      "type": "object",
+      "description": "State variables. 'introduced' are new (Type B) and MUST carry an elemental/ionic formula (amendment 5) — the composition ticket 06 recomputes COD/N/P/charge from. 'referenced' are drawn from the model base (Type A and Type B alike).",
+      "additionalProperties": false,
+      "properties": {
+        "introduced": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state_variable"
+          }
+        },
+        "referenced": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/referenced_state_variable"
+          }
+        }
+      }
+    },
+    "processes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/process"
+      },
+      "description": "The Gujer matrix in spec form: one entry per process (a row on the model-base Model sheet). Empty for Type A (the base supplies the matrix); non-empty for Type B. Each stoichiometric coefficient carries provenance, and each process lists its inherited parameters (amendment 2)."
+    },
+    "code_blocks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/code_block"
+      },
+      "description": "The Code-sheet contract (ticket 03b). codelocation is closed to the cycle-1 allow-list; anything else (Event, Accumulated, DataComm, Integrated, C++ code, SolverConfiguration) is a documented refusal, never a silent mis-emit."
+    },
+    "gui": {
+      "type": "object",
+      "description": "GUI-visibility contract (ticket 14). Not read by the SMT or compiler, but required for a usable drawing-board unit; the emitter writes it and a dedicated lint rung checks it.",
+      "additionalProperties": false,
+      "properties": {
+        "appearance": {
+          "$ref": "#/$defs/appearance"
+        },
+        "group_info": {
+          "$ref": "#/$defs/group_info"
+        },
+        "display": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/display_line"
+          },
+          "description": "Property-panel variable tables (optional but recommended)."
+        },
+        "popup": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/display_line"
+          },
+          "description": "Hover tooltip variable list (optional but recommended)."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Authoring metadata and machine stamps. 'created'/'modified' are volatile and excluded from content_hash.",
+      "required": [
+        "created",
+        "authoring_tool"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "created": {
+          "type": "string",
+          "description": "ISO-8601, set once at first authoring."
+        },
+        "modified": {
+          "type": "string",
+          "description": "ISO-8601, updated on each correction."
+        },
+        "authoring_tool": {
+          "type": "string",
+          "description": "Which entry point produced the spec: 'describe_<unit>' (prose) or 'define_<unit>' (structured)."
+        },
+        "icon": {
+          "enum": [
+            "placeholder",
+            "template-copy",
+            "user-supplied"
+          ],
+          "description": "Where the palette .emf came from (ticket 14)."
+        },
+        "icon_source": {
+          "type": "string",
+          "description": "Path when icon=template-copy."
+        },
+        "literature_opt_in": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when the user opted in to literature-value proposal (ticket Q5)."
+        },
+        "machine_stamp": {
+          "type": "string",
+          "description": "Type B: 'stoichiometry-verified, kinetically-unverified' until the degenerate-equivalence run executes (Q14 teeth item 3)."
+        },
+        "accepted": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": [
+                "by",
+                "at",
+                "confirmation"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "by": {
+                  "type": "string",
+                  "description": "Who accepted. UNAUTHENTICATED free text - a record, not an identity check."
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO-8601 timestamp of acceptance."
+                },
+                "lint": {
+                  "type": "string",
+                  "description": "Rung-1 state at acceptance time."
+                },
+                "confirmation": {
+                  "enum": [
+                    "per-value",
+                    "bulk"
+                  ],
+                  "description": "Whether each magnitude was confirmed individually or all at once. 'bulk' requires an explicit opt-in at emission."
+                },
+                "confirmed": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "path -> fingerprint of value+provenance+source+unit at acceptance. Any later edit breaks the match and revokes emission."
+                }
+              }
+            }
+          ],
+          "description": "Explicit human acceptance (ticket 08). Emission refuses without it. ADDED after building the tools revealed that an ACCEPTED spec failed validation - provenance is additionalProperties:false and had no slot for it."
+        }
+      }
+    },
+    "$comment": {
+      "type": "string",
+      "description": "Free-text annotation. Standard JSON Schema annotation keyword; permitted at the top level so fixtures and hand-written specs can carry a note without tripping additionalProperties:false."
+    }
+  },
+  "allOf": [
+    {
+      "description": "routed_as: A forbids a model-base delta; routed_as: B requires one. Full bidirectional consistency (non-empty introduced/processes for B, formula on every introduced SV) is enforced by the linter and stated here as the contract.",
+      "if": {
+        "properties": {
+          "routing": {
+            "properties": {
+              "routed_as": {
+                "const": "A"
+              }
+            },
+            "required": [
+              "routed_as"
+            ]
+          }
+        },
+        "required": [
+          "routing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "model_binding": {
+            "properties": {
+              "model_base": {
+                "type": "null"
+              }
+            }
+          },
+          "state_variables": {
+            "properties": {
+              "introduced": {
+                "maxItems": 0
+              }
+            }
+          },
+          "processes": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "model_binding": {
+            "required": [
+              "model_base"
+            ],
+            "properties": {
+              "model_base": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "provenance": {
+      "type": "string",
+      "enum": [
+        "user-measured",
+        "user-stated",
+        "literature-cited",
+        "inherited-model-base"
+      ],
+      "description": "Closed source enumeration (amendment 1). 'user-measured' = a value the user obtained by measurement. 'user-stated' = a value the user asserts without a measurement. 'literature-cited' = proposed behind the literature opt-in, with a 'source'. 'inherited-model-base' = pulled from a model base (must also appear in the process's inherited_parameters list)."
+    },
+    "required_sentinel": {
+      "const": "REQUIRED",
+      "description": "The first-class unfilled-value sentinel (Q5). A coefficient whose 'value' equals this fails the linter until replaced. It is a value, never an absent key."
+    },
+    "coefficient": {
+      "type": "object",
+      "description": "A value plus its provenance. 'value' is a number, a symbolic/string expression (e.g. '-1/YOHO,VFA,ox'), a named limit sentinel (e.g. 'BigNumber'), or the literal 'REQUIRED' sentinel.",
+      "required": [
+        "value",
+        "provenance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/$defs/required_sentinel"
+            },
+            {
+              "type": "string",
+              "description": "Symbolic expression ('-1/YOHO,VFA,ox'), named limit sentinel ('BigNumber','MinV','MaxFlow'), or the REQUIRED sentinel."
+            }
+          ],
+          "description": "A number, the REQUIRED sentinel, or a string. NOTE: JSON Schema cannot CONSTRAIN this to the sentinel, because value must also accept arbitrary symbolic expressions and named limit sentinels. Enforcement of REQUIRED (fail the build until replaced) is a rung-1 LINTER duty, not a schema duty. The required_sentinel $ref above exists so the sentinel is a discoverable, named form rather than a convention buried in prose."
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "source": {
+          "type": "string",
+          "description": "Citation/reference when provenance is literature-cited; measurement description otherwise."
+        },
+        "unverified": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when literature-cited or user-stated without a measurement. Rendered by the review gate (ticket 08)."
+        }
+      }
+    },
+    "balance": {
+      "type": "object",
+      "required": [
+        "name",
+        "conserved"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": [
+            "COD",
+            "C",
+            "N",
+            "P",
+            "Na",
+            "K",
+            "Ca",
+            "Mg",
+            "Cl",
+            "Fe",
+            "Al",
+            "charge",
+            "water",
+            "energy"
+          ],
+          "description": "Balance identity. The COD/C/N/P/Na/K/Ca/Mg/Cl/Fe/Al set matches the model-base balance columns (ticket 04); charge, water, energy are added for the continuity rung."
+        },
+        "conserved": {
+          "type": "boolean",
+          "description": "true = conserved across the port; false = exempt (mass leaves/enters by design)."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Required in practice when conserved=false (a gas port vents, a catchment adds)."
+        }
+      }
+    },
+    "elemental_formula": {
+      "type": "object",
+      "description": "Elemental/ionic composition of a state variable (amendment 5). Ticket 06 recomputes COD/N/P/charge from this and fails on mismatch with any declared composition.",
+      "required": [
+        "elements",
+        "provenance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "elements": {
+          "type": "object",
+          "description": "Stoichiometric amounts per C-mole basis, e.g. {\"C\":1,\"H\":1.75,\"O\":0.5,\"N\":0.2,\"P\":0.02}. Keys are element symbols.",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "charge": {
+          "type": "number",
+          "default": 0,
+          "description": "Ionic charge per C-mole."
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "port": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "name",
+        "direction",
+        "phase"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Port symbol, e.g. 'inp', 'outp', 'oflow' (port.. qualification)."
+        },
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string",
+          "description": "Position mini-language, e.g. 'BL;;6px;-60px' (ticket 02b)."
+        },
+        "direction": {
+          "enum": [
+            "in",
+            "out"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "L",
+            "Air",
+            "Sewer",
+            "River",
+            "Biogas"
+          ]
+        },
+        "image": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "comments": {
+          "type": "string"
+        },
+        "balances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/balance"
+          },
+          "description": "Balance-exemption declaration (amendment 3). A port with no entry conserves nothing by default; list the balances it participates in and mark conserved true/false."
+        }
+      }
+    },
+    "attribute": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "default": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "rule": {
+          "type": "string"
+        },
+        "comments": {
+          "type": "string"
+        }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "name",
+        "default",
+        "unit"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "unit",
+            "kinetic",
+            "stoichiometric",
+            "equilibrium"
+          ],
+          "default": "unit",
+          "description": "'unit' = Parameters-sheet entry. 'kinetic'/'stoichiometric'/'equilibrium' = model-base additions (Type B only), mirroring the Rule Type(...) vocabulary."
+        },
+        "default": {
+          "$ref": "#/$defs/coefficient"
+        },
+        "low_limit": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "Number or named sentinel (BigNumber, MinV, MaxFlow, ...)."
+        },
+        "high_limit": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "description": "From the unit vocabulary (PY/data/unit_vocabulary.json)."
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "rule": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "state_variable": {
+      "type": "object",
+      "description": "A NEW state variable (Type B). The full Components-sheet row (ticket 04) plus the elemental/ionic formula the continuity rung depends on. Every introduced state variable carries BOTH `formula` (elemental/ionic makeup) and `composition` (declared composition on a stated basis). They are deliberately redundant: rung 2 derives one from the other and fails on mismatch.",
+      "required": [
+        "symbol",
+        "name",
+        "initial_value",
+        "unit",
+        "handling",
+        "formula",
+        "composition"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "initial_value": {
+          "$ref": "#/$defs/coefficient"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "handling": {
+          "enum": [
+            "Integrated",
+            "Algebraic",
+            "Set"
+          ]
+        },
+        "phase": {
+          "enum": [
+            "L",
+            "G"
+          ]
+        },
+        "particle_size": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string",
+          "description": "Component group, e.g. 'Biomass', 'Substrate'."
+        },
+        "formula": {
+          "$ref": "#/$defs/elemental_formula"
+        },
+        "composition": {
+          "$ref": "#/$defs/declared_composition"
+        }
+      }
+    },
+    "referenced_state_variable": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "from_model"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "from_model": {
+          "type": "string",
+          "description": "Model base the variable is drawn from, e.g. 'Sumo2C'."
+        }
+      }
+    },
+    "process": {
+      "type": "object",
+      "description": "One Gujer row in spec form (ticket 03b/04).",
+      "required": [
+        "id",
+        "name",
+        "rate_expression",
+        "stoichiometry"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Process id, e.g. 'r1'."
+        },
+        "name": {
+          "type": "string",
+          "description": "Human recipe, e.g. 'OHO growth on VFAs, O2'."
+        },
+        "rate_expression": {
+          "type": "string",
+          "description": "Symbolic rate, e.g. 'muOHO,T*XOHO*MsatSVFA,KVFA*...'."
+        },
+        "rate_unit": {
+          "type": "string",
+          "default": "g.m-3.d-1"
+        },
+        "stoichiometry": {
+          "type": "array",
+          "description": "One coefficient per component. Each coefficient carries provenance.",
+          "items": {
+            "type": "object",
+            "required": [
+              "component",
+              "coefficient"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "component": {
+                "type": "string"
+              },
+              "coefficient": {
+                "$ref": "#/$defs/coefficient"
+              }
+            }
+          }
+        },
+        "inherited_parameters": {
+          "type": "array",
+          "description": "Model-base quantities this process imports (amendment 2). Provenance is inherited-model-base by construction; 'from_model' names the source base so the review gate can flag values calibrated for other processes.",
+          "items": {
+            "type": "object",
+            "required": [
+              "parameter",
+              "from_model"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "parameter": {
+                "type": "string"
+              },
+              "from_model": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "description": "What the parameter does in this process."
+              }
+            }
+          }
+        },
+        "reaction": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        }
+      }
+    },
+    "code_line": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "expression"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "expression": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "rule": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        }
+      }
+    },
+    "code_block": {
+      "type": "object",
+      "required": [
+        "section",
+        "codelocation",
+        "lines"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "section": {
+          "type": "string",
+          "description": "Section title, e.g. 'Mass balancing'."
+        },
+        "codelocation": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "Dynamic",
+                "ZeroTime",
+                "ZeroTime; Dynamic",
+                "Equilibrium"
+              ]
+            },
+            {
+              "pattern": "^ZeroTime, .+$"
+            }
+          ],
+          "description": "Closed cycle-1 allow-list (ticket 03b MVS). No Event, Accumulated, DataComm, or Integrated in cycle 1."
+        },
+        "type": {
+          "enum": [
+            "",
+            "Array",
+            "if block"
+          ],
+          "default": "",
+          "description": "Table descriptor type (ticket 03b)."
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/code_line"
+          }
+        }
+      }
+    },
+    "model_id": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Local model identifier, e.g. 'MODEL'."
+        },
+        "valid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Model bases this unit may bind to."
+        },
+        "invalid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "model_base": {
+      "type": "object",
+      "description": "The Type-B fork declaration only. The additions themselves live at the top level (state_variables/processes/parameters) so no coefficient is duplicated.",
+      "required": [
+        "fork_from",
+        "new_name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fork_from": {
+          "type": "string",
+          "description": "Shipped base to fork, e.g. 'Sumo2C'."
+        },
+        "new_name": {
+          "type": "string",
+          "pattern": "^HH_.+_v[0-9]+$",
+          "description": "Forked base name (ticket 04/15)."
+        },
+        "register_in_systemcode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the new base must be registered in systemcode.xlsx Model Interfaces/Variables (multi-model plants only, ticket 04)."
+        }
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "required": [
+        "default_icon",
+        "custom_size"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "default_icon": {
+          "type": "string",
+          "description": "Default .emf filename, resolved beside the workbook (ticket 14)."
+        },
+        "custom_size": {
+          "type": "string",
+          "pattern": "^\\d+x\\d+$"
+        },
+        "conditional_rows": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "State-conditional icon swaps. Cycle 1 may omit these (ticket 14)."
+        }
+      }
+    },
+    "group_info": {
+      "type": "object",
+      "required": [
+        "sorting_priority",
+        "default_unit"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sorting_priority": {
+          "type": "integer",
+          "minimum": 70,
+          "maximum": 2000
+        },
+        "default_unit": {
+          "type": "string",
+          "description": "Workbook STEM, no extension (ticket 14)."
+        },
+        "hide_name": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "display_line": {
+      "type": "object",
+      "required": [
+        "symbol"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "decimals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "rule": {
+          "type": "string"
+        }
+      }
+    },
+    "declared_composition": {
+      "type": "object",
+      "description": "The state variable's composition as DECLARED, independent of `formula`. Continuity checking derives composition from `formula` and compares it against this; without an independent declaration the continuity check is self-certifying for new state variables (ticket 06). Non-carbon species (e.g. sulfate {S:1,O:4}) cannot be expressed on a g-per-gCOD basis at all and MUST be declared explicitly rather than derived.",
+      "required": [
+        "basis",
+        "values",
+        "provenance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "g-per-gCOD",
+            "g-per-gTSS",
+            "mol-per-mol",
+            "explicit-not-derivable"
+          ],
+          "description": "Basis the `values` are expressed on. Use 'explicit-not-derivable' for species with no COD (sulfate, nitrate-N as N, mineral ions): the checker then records 'declared, not derivable' instead of attempting a per-COD derivation."
+        },
+        "values": {
+          "type": "object",
+          "description": "Element symbol -> composition value on `basis`. Keys must be a subset of the eleven balance elements the vendor checks: COD, C, N, P, Na, K, Ca, Mg, Cl, Fe, Al.",
+          "propertyNames": {
+            "enum": [
+              "COD",
+              "C",
+              "N",
+              "P",
+              "Na",
+              "K",
+              "Ca",
+              "Mg",
+              "Cl",
+              "Fe",
+              "Al"
+            ]
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "source": {
+          "type": "string"
+        },
+        "unverified": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

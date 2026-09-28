@@ -1,0 +1,81 @@
+{
+  "empty_compliance": {
+    "overall": "COMPLIANT",
+    "parameters": {},
+    "law": "Egyptian Law 48/1982"
+  },
+  "unknown_job_compliance": {
+    "overall": "COMPLIANT",
+    "parameters": {},
+    "law": "Egyptian Law 48/1982"
+  },
+  "partial_compliance": {
+    "overall": "COMPLIANT",
+    "parameters": {
+      "TSS": {
+        "value": 1,
+        "limit": 50,
+        "status": "PASS",
+        "margin": 49
+      }
+    },
+    "law": "Egyptian Law 48/1982"
+  },
+  "time_summary": {
+    "time_days": 86400000.0
+  },
+  "missing_effluent_becomes_zero": {
+    "SCOD": 0,
+    "TKN": 0,
+    "TN": 0
+  },
+  "nonexistent_baseline_target": {
+    "ok": true,
+    "mapping": {
+      "u1": "DOES_NOT_EXIST"
+    },
+    "unmapped": [],
+    "unused_targets": [
+      "Influent1"
+    ],
+    "warnings": [
+      "1 baseline unit(s) are not referenced by the schematic; their parameters stay at baseline values."
+    ]
+  },
+  "shim": {
+    "set_without_job_returns": true,
+    "value_after_project_switch": 123,
+    "queued": [
+      "set Sumo__Plant__Tank__param__V 123"
+    ]
+  },
+  "acceptance_after_equation_change": {
+    "original": true,
+    "changed": true
+  },
+  "corrupt_snapshot_revert": {
+    "error": "ReadError",
+    "existing_file_survives": false
+  },
+  "stage8_without_schematic": {
+    "ok": true,
+    "stage": 8,
+    "dll_check": {
+      "ok": true,
+      "mode": "exports_only",
+      "dll_path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\.scratch\\review-20260908-ziwzgojs\\fake.dll",
+      "dll_export_count": 0,
+      "sample_exports": []
+    },
+    "message": "DLL verification passed. Project is ready for simulation."
+  },
+  "tracer_foreign_job": {
+    "ok": true,
+    "job_id": 42,
+    "last": {
+      "Sumo__Time": 1,
+      "foreign_job_data": 42
+    },
+    "callbacks_restored": false
+  }
+}

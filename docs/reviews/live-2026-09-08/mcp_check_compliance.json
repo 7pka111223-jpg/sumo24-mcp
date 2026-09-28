@@ -1,0 +1,14 @@
+{
+  "elapsed_s": 0.00531020003836602,
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"overall\": \"COMPLIANT\",\n  \"parameters\": {},\n  \"law\": \"Egyptian Law 48/1982\"\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

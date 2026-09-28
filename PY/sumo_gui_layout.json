@@ -1,0 +1,53 @@
+{
+  "_comment": "Calibration file for Group GG (SUMO24 GUI control). Fill in the fields for your local SUMO24 install. Coordinates are client-area pixels relative to the SUMO main window. Use gui_screenshot to capture the canvas and read off coordinates with any image editor.",
+  "executable": "D:/SUMO24/Sumo24.exe",
+  "window_title_regex": "(?i)(SUMO|Sumo).*",
+  "launch_timeout_s": 60,
+  "post_launch_wait_s": 4,
+  "palette": {
+    "AerationTank": {
+      "name": "Aeration Tank"
+    },
+    "PrimaryClarifier": {
+      "name": "Primary Clarifier"
+    },
+    "SecondaryClarifier": {
+      "name": "Secondary Clarifier"
+    },
+    "Influent": {
+      "name": "Influent"
+    },
+    "Effluent": {
+      "name": "Effluent"
+    },
+    "Mixer": {
+      "name": "Mixer"
+    },
+    "Splitter": {
+      "name": "Splitter"
+    },
+    "Digester": {
+      "name": "Digester"
+    },
+    "MBBR": {
+      "name": "MBBR",
+      "x": 230,
+      "y": 170
+    },
+    "CSTR_TEST": {
+      "template": "F:\\UNI\\SUMO\\MCP\\PY\\gui_templates\\CSTR_TEST.png"
+    }
+  },
+  "canvas": {
+    "default_drop": {
+      "x": 600,
+      "y": 400
+    }
+  },
+  "save_dialog": {
+    "auto_keys": true,
+    "shortcut": "^s",
+    "filename_field_name": "File name:",
+    "save_button_name": "Save"
+  }
+}

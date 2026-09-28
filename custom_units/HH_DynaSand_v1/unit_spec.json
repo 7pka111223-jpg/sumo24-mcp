@@ -1,0 +1,1015 @@
+{
+  "schema_version": 1,
+  "identity": {
+    "name": "DynaSand",
+    "qualified_name": "HH_DynaSand_v1",
+    "version": 1,
+    "category": "Custom",
+    "supersedes": null
+  },
+  "routing": {
+    "routed_as": "A",
+    "routing_evidence": [
+      "No new state variables: capture re-partitions the model's sSV/cSV/xSV triplet states only.",
+      "Structural clone of the vendor volumeless point separator (30 Separators/Sand filter), the Type A pattern.",
+      "Type B (bed inventory / head loss / breakthrough) explicitly out of scope per design doc 2026-09-07."
+    ],
+    "routing_confirmed_by_user": true
+  },
+  "classification": {
+    "is_composite": false,
+    "composite_evidence": {
+      "sub_units": [],
+      "couplings": []
+    }
+  },
+  "model_binding": {
+    "models": [
+      {
+        "id": "MODEL",
+        "valid": [],
+        "invalid": []
+      }
+    ],
+    "model_base": null,
+    "model_symbol": "MODEL",
+    "name": "Biokinetic model",
+    "valid": [],
+    "invalid": []
+  },
+  "ports": [
+    {
+      "symbol": "inp",
+      "name": "Influent",
+      "direction": "in",
+      "phase": "L",
+      "position": "TL;;6px;12px",
+      "rule": "",
+      "comments": ""
+    },
+    {
+      "symbol": "eff",
+      "name": "Filtrate",
+      "direction": "out",
+      "phase": "L",
+      "position": "BR;;-6px;-12px",
+      "rule": "",
+      "comments": ""
+    },
+    {
+      "symbol": "wash",
+      "name": "Wash water reject",
+      "direction": "out",
+      "phase": "L",
+      "position": "TR;;-6px;12px",
+      "rule": "",
+      "comments": ""
+    }
+  ],
+  "parameters": [
+    {
+      "symbol": "fWash",
+      "name": "Wash-water fraction of influent flow",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0.001,
+      "high_limit": 0.999,
+      "default": {
+        "value": 0.11,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 3.1: sand-wash 10.8-12.3% of influent across low/medium/high flow categories",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "Diameter",
+      "name": "Filter diameter",
+      "unit": "m",
+      "decimals": 3,
+      "low_limit": 0.05,
+      "high_limit": "",
+      "default": {
+        "value": 0.96,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "BedDepth",
+      "name": "Sand bed depth",
+      "unit": "m",
+      "decimals": 3,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 1.5,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "BedHeightEff",
+      "name": "Effective bed height",
+      "unit": "m",
+      "decimals": 3,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 3.125,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "UnitHeight",
+      "name": "Total unit height",
+      "unit": "m",
+      "decimals": 3,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 4.175,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "SandVolume",
+      "name": "Sand inventory",
+      "unit": "m3",
+      "decimals": 2,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 1.7,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "SandDmin",
+      "name": "Media size (min)",
+      "unit": "mm",
+      "decimals": 2,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 1.2,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "SandDmax",
+      "name": "Media size (max)",
+      "unit": "mm",
+      "decimals": 2,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 2.0,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "AirLiftQ",
+      "name": "Air-lift air flow",
+      "unit": "m3/h",
+      "decimals": 2,
+      "low_limit": "",
+      "high_limit": "",
+      "default": {
+        "value": 1.9,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, Sec 2.1, at 4 bar",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fXTSS,rem",
+      "name": "Base particulate concentration reduction (TSS proxy)",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.621,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: baseline max TSS removal 62.1% (per-category detail Figure 6, image-only)",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fColloid,rem",
+      "name": "Base colloidal concentration reduction (turbidity proxy, not direct NTU)",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.67,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: baseline max turbidity removal 67.0%",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fMaxTSS,alum",
+      "name": "Alum max particulate concentration reduction",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.717,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: alum max TSS removal 71.7%",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fMaxTurb,alum",
+      "name": "Alum max colloidal concentration reduction (turbidity proxy)",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.945,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: alum max turbidity removal 94.5%",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fMaxTSS,fe",
+      "name": "Ferric max particulate concentration reduction",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.838,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: ferric max TSS removal 83.8%",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "fMaxTurb,fe",
+      "name": "Ferric max colloidal concentration reduction (turbidity proxy)",
+      "unit": "-",
+      "decimals": 3,
+      "low_limit": 0,
+      "high_limit": 1,
+      "default": {
+        "value": 0.814,
+        "provenance": "literature-cited",
+        "source": "El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058, abstract: ferric max turbidity removal 81.4%",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "KD,alum",
+      "name": "Alum half-improvement dose",
+      "unit": "mg/L",
+      "decimals": 2,
+      "low_limit": 0.001,
+      "high_limit": 100,
+      "default": {
+        "value": 7.0,
+        "provenance": "user-stated",
+        "source": "engineering assumption: half-improvement dose = 1/2 of the 8-14 mg Al/L jar-optimum range; El-Gendy et al. 2026 Sec 3.3",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "KD,fe",
+      "name": "Ferric half-improvement dose",
+      "unit": "mg/L",
+      "decimals": 2,
+      "low_limit": 0.001,
+      "high_limit": 100,
+      "default": {
+        "value": 7.5,
+        "provenance": "user-stated",
+        "source": "engineering assumption: half-improvement dose = 1/2 of the 14-16 mg Fe/L jar-optimum range; El-Gendy et al. 2026 Sec 3.3",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "Dose,alum",
+      "name": "Alum dose (mg Al/L; 0 = no coagulant)",
+      "unit": "mg/L",
+      "decimals": 2,
+      "low_limit": 0,
+      "high_limit": 100,
+      "default": {
+        "value": 0.0,
+        "provenance": "user-stated",
+        "source": "design decision: coagulation inactive by default; pilot-tested range 8-14 mg Al/L, El-Gendy et al. 2026 Sec 3.3",
+        "unverified": false
+      }
+    },
+    {
+      "symbol": "Dose,fe",
+      "name": "Ferric dose (mg Fe/L; 0 = no coagulant)",
+      "unit": "mg/L",
+      "decimals": 2,
+      "low_limit": 0,
+      "high_limit": 100,
+      "default": {
+        "value": 0.0,
+        "provenance": "user-stated",
+        "source": "design decision: coagulation inactive by default; pilot-tested range 14-16 mg Fe/L, El-Gendy et al. 2026 Sec 3.3",
+        "unverified": false
+      }
+    }
+  ],
+  "processes": [],
+  "code_blocks": [
+    {
+      "section": "Model parameter inheritance",
+      "title": "Model parameters in outlets",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..PAR",
+          "name": "MODEL.PAR.Name",
+          "expression": "Parent..PAR",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..PAR",
+          "name": "MODEL.PAR.Name",
+          "expression": "Parent..PAR",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "Hydraulics",
+      "title": "Volumetric flows and loading",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..Q",
+          "name": "Wash-water flow rate",
+          "expression": "inp..Q * fWash",
+          "unit": "m3/d",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..Q",
+          "name": "Filtrate flow rate",
+          "expression": "inp..Q - wash..Q",
+          "unit": "m3/d",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "BedArea",
+          "name": "Filter bed cross-section",
+          "expression": "3.14159265 * Diameter * Diameter / 4",
+          "unit": "m2",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "HLR",
+          "name": "Hydraulic loading rate",
+          "expression": "inp..Q / BedArea",
+          "unit": "m/d",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "Coagulant response",
+      "title": "Effective removal fractions",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "fXTSS,eff",
+          "name": "Effective particulate removal fraction",
+          "expression": "fXTSS,rem + (fMaxTSS,alum - fXTSS,rem) * Dose,alum / (KD,alum + Dose,alum) + (fMaxTSS,fe - fXTSS,rem) * Dose,fe / (KD,fe + Dose,fe)",
+          "unit": "-",
+          "decimals": "",
+          "rule": "",
+          "comments": "bounded in [0,1] for single-coagulant dosing (parameter limits); simultaneous alum+ferric flagged by CoagConflict"
+        },
+        {
+          "symbol": "fCol,eff",
+          "name": "Effective colloidal removal fraction",
+          "expression": "fColloid,rem + (fMaxTurb,alum - fColloid,rem) * Dose,alum / (KD,alum + Dose,alum) + (fMaxTurb,fe - fColloid,rem) * Dose,fe / (KD,fe + Dose,fe)",
+          "unit": "-",
+          "decimals": "",
+          "rule": "",
+          "comments": "bounded in [0,1] for single-coagulant dosing (parameter limits); simultaneous alum+ferric flagged by CoagConflict"
+        }
+      ]
+    },
+    {
+      "section": "Effluent concentrations",
+      "title": "Filtrate concentrations",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..L.sSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.sSV",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..L.cSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.cSV * (1 - fCol,eff)",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..L.xSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.xSV * (1 - fXTSS,eff)",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "Calculated variables",
+      "title": "Stoichiometric calculated variables in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "eff..MODEL.CVAR.Expression",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "Type(Stoichiometric)",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Stoichiometric calculated variables in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "wash..MODEL.CVAR.Expression",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "Type(Stoichiometric)",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Energy calculated variables in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "eff..MODEL.CVAR.Expression",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "Type(Energy)",
+          "comments": "Carries T and TK onto the outlet; without this the downstream unit cannot resolve <pipe>..TK"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Energy calculated variables in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "wash..MODEL.CVAR.Expression",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "Type(Energy)",
+          "comments": "Carries T and TK onto the outlet; without this the downstream unit cannot resolve <pipe>..TK"
+        }
+      ]
+    },
+    {
+      "section": "Mass flows",
+      "title": "Filtrate and wash mass flows",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..F.L.sSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "eff..Q * eff..L.sSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..F.L.cSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "eff..Q * eff..L.cSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..F.L.xSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "eff..Q * eff..L.xSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "eff..F.L.SV,molar",
+          "name": "MODEL.SV.Name molar flow",
+          "expression": "eff..F.L.SV / AMP",
+          "unit": "mol P.d-1",
+          "decimals": 0,
+          "rule": "Only(SPO4)",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..F.L.sSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "inp..F.L.sSV - eff..F.L.sSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..F.L.cSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "inp..F.L.cSV - eff..F.L.cSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..F.L.xSV",
+          "name": "MODEL.SV.Name mass flow",
+          "expression": "inp..F.L.xSV - eff..F.L.xSV",
+          "unit": "",
+          "decimals": 0,
+          "rule": "",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..F.L.SV,molar",
+          "name": "MODEL.SV.Name molar flow",
+          "expression": "wash..F.L.SV / AMP",
+          "unit": "mol P.d-1",
+          "decimals": 0,
+          "rule": "Only(SPO4)",
+          "comments": ""
+        },
+        {
+          "symbol": "wash..L.sSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.sSV",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": "zero-flow-safe form (no division by wash..Q)"
+        },
+        {
+          "symbol": "wash..L.cSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.cSV * (1 + (1 - fWash) * fCol,eff / fWash)",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": "zero-flow-safe form (no division by wash..Q)"
+        },
+        {
+          "symbol": "wash..L.xSV",
+          "name": "MODEL.SV.Name",
+          "expression": "inp..L.xSV * (1 + (1 - fWash) * fXTSS,eff / fWash)",
+          "unit": "",
+          "decimals": "",
+          "rule": "",
+          "comments": "zero-flow-safe form (no division by wash..Q)"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Stoichiometric calculated variable mass flows in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..F.CVAR",
+          "name": "MODEL.CVAR.Name mass flow",
+          "expression": "eff..Q * eff..CVAR",
+          "unit": "MODEL.CVAR.Unit * m3.d-1",
+          "decimals": 0,
+          "rule": "Type(Stoichiometric)",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Stoichiometric calculated variable mass flows in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..F.CVAR",
+          "name": "MODEL.CVAR.Name mass flow",
+          "expression": "wash..Q * wash..CVAR",
+          "unit": "MODEL.CVAR.Unit * m3.d-1",
+          "decimals": 0,
+          "rule": "Type(Stoichiometric)",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "section": "pH mapping",
+      "title": "Equilibrium calculated variables in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "inp..CVAR",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "pH; Type(Equilibrium)",
+          "comments": "Equilibrium calculated variables mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Equilibrium calculated variables in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..CVAR",
+          "name": "MODEL.CVAR.Name",
+          "expression": "inp..CVAR",
+          "unit": "MODEL.CVAR.Unit",
+          "decimals": "",
+          "rule": "pH; Type(Equilibrium)",
+          "comments": "Equilibrium calculated variables mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Equilibrium species in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..SPC",
+          "name": "MODEL.Species.Name",
+          "expression": "inp..SPC",
+          "unit": "MODEL.Species.Unit",
+          "decimals": "",
+          "rule": "pH",
+          "comments": "Equilibrium species mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Equilibrium species in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..SPC",
+          "name": "MODEL.Species.Name",
+          "expression": "inp..SPC",
+          "unit": "MODEL.Species.Unit",
+          "decimals": "",
+          "rule": "pH",
+          "comments": "Equilibrium species mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Charge balance and ionic strength in filtrate",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "eff..MODEL.pH.Symbol",
+          "name": "MODEL.pH.Name",
+          "expression": "inp..MODEL.pH.Symbol",
+          "unit": "MODEL.pH.Unit",
+          "decimals": "",
+          "rule": "pH; Type(Chargebalance)",
+          "comments": "Charge balance and ionic strength mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "",
+      "title": "Charge balance and ionic strength in wash water",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "wash..MODEL.pH.Symbol",
+          "name": "MODEL.pH.Name",
+          "expression": "inp..MODEL.pH.Symbol",
+          "unit": "MODEL.pH.Unit",
+          "decimals": "",
+          "rule": "pH; Type(Chargebalance)",
+          "comments": "Charge balance and ionic strength mapped from input port"
+        }
+      ]
+    },
+    {
+      "section": "Diagnostics",
+      "title": "Local performance diagnostics (GUI)",
+      "codelocation": "Dynamic",
+      "lines": [
+        {
+          "symbol": "ReducTSS,loc",
+          "name": "Local TSS concentration reduction",
+          "expression": "1 - eff..XTSS / inp..XTSS",
+          "unit": "-",
+          "decimals": 3,
+          "comments": "local to the unit; does not detect downstream wash recycling; unavailable when inlet TSS is zero"
+        },
+        {
+          "symbol": "DivertTSS,loc",
+          "name": "Local TSS load diversion to wash",
+          "expression": "1 - eff..Q * eff..XTSS / (inp..Q * inp..XTSS)",
+          "unit": "-",
+          "decimals": 3,
+          "comments": "local to the unit; unavailable when inlet TSS or flow is zero"
+        },
+        {
+          "symbol": "ResidTSS",
+          "name": "TSS balance residual",
+          "expression": "inp..Q * inp..XTSS - eff..Q * eff..XTSS - wash..Q * wash..XTSS",
+          "unit": "g.d-1",
+          "decimals": 0,
+          "comments": "should be ~0 at every operating point"
+        },
+        {
+          "symbol": "HLRh",
+          "name": "Hydraulic loading rate",
+          "expression": "HLR / 24",
+          "unit": "m/h",
+          "decimals": 2,
+          "comments": "pilot tested range 3.9-8.5 m3/h feed (~5.4-11.7 m/h HLR)"
+        },
+        {
+          "symbol": "CoagConflict",
+          "name": "Coagulant conflict (alum AND ferric both dosed)",
+          "expression": "Dose,alum * Dose,fe",
+          "unit": "-",
+          "decimals": 0,
+          "comments": "nonzero = simultaneous alum+ferric (not pilot-validated; can push colloidal reduction above 1) - set one dose to 0"
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "created": "2026-09-07T14:07:22",
+    "authoring_tool": "compose_spec",
+    "accepted": {
+      "by": "user (chat approval of design + spec, 2026-09-07)",
+      "at": "2026-09-07T14:07:33",
+      "lint": "clean",
+      "confirmation": "bulk",
+      "confirmed": {
+        ".parameters[0].default": "cb53fc625b8e4848",
+        ".parameters[10].default": "ae2d09501c54f31e",
+        ".parameters[11].default": "dd377c9d85fb0420",
+        ".parameters[12].default": "95a940bb3d09a305",
+        ".parameters[13].default": "c2d86dcd5e92655f",
+        ".parameters[14].default": "1ea8bb116adcafe7",
+        ".parameters[15].default": "3f60d120cd69b525",
+        ".parameters[16].default": "fdd371f79ab783ea",
+        ".parameters[17].default": "92f61c2d4c3c8ccb",
+        ".parameters[18].default": "ad661839209e886e",
+        ".parameters[1].default": "fe6ac794c52d08b0",
+        ".parameters[2].default": "e8d029ddb5b1cfd9",
+        ".parameters[3].default": "10216b78c07b588b",
+        ".parameters[4].default": "8c6b4849b00cac39",
+        ".parameters[5].default": "be3abab71e4f4b8d",
+        ".parameters[6].default": "89fb0559058ac73d",
+        ".parameters[7].default": "416b331158614aac",
+        ".parameters[8].default": "884ac1df2066c9cb",
+        ".parameters[9].default": "4698591e13cdee03"
+      }
+    }
+  },
+  "description": "DynaSand continuous up-flow sand filter (Type A custom unit, HH_DynaSand_v1).\nTertiary polishing of secondary effluent: up-flow filtration through a moving sand bed\nwith simultaneous airlift washing; wash water is a constant fraction (fWash) of influent\nand leaves as a reject side-stream carrying the captured solids.\nBuilt-in coagulant response: set Dose,alum (mg Al/L) or Dose,fe (mg Fe/L) > 0 to engage\nalum / ferric chloride assistance (pilot-tested: alum 8-14, ferric 14-16 mg/L).\nCalibrated to the Qaha\nWWTP pilot: El-Gendy et al. 2026, Sustainability 18(12):6058, doi:10.3390/su18126058.\nWASH ROUTING: Wash reject carries separated solids. Route it to an external reject outlet or a treatment path with net solids wasting. Returning all wash directly to this filter's inlet gives no net steady-state removal across the combined system.\nCOAGULANT DOSES are empirical capture modifiers: this unit does not calculate metal addition, hydroxide sludge generation or dosing-induced pH changes.",
+  "attributes": [
+    {
+      "symbol": "Volumeless",
+      "name": "Volumeless point separator",
+      "default": "True",
+      "rule": "Constant"
+    },
+    {
+      "symbol": "Input",
+      "name": "Input process unit",
+      "default": "False",
+      "rule": "Hidden"
+    },
+    {
+      "symbol": "InheritkinPAR",
+      "name": "Kinetic parameter inheritance",
+      "default": "False",
+      "rule": "Inherit"
+    },
+    {
+      "symbol": "InheritstoPAR",
+      "name": "Stoichiometric parameter inheritance",
+      "default": "True",
+      "rule": "Inherit"
+    },
+    {
+      "symbol": "InheritequPAR",
+      "name": "Equilibrium parameter inheritance",
+      "default": "True",
+      "rule": "Inherit"
+    }
+  ],
+  "gui": {
+    "display": [
+      {
+        "symbol": "inp..Q",
+        "name": "Inlet flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "eff..Q",
+        "name": "Filtrate flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "wash..Q",
+        "name": "Wash reject flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "inp..XTSS",
+        "name": "Inlet TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "eff..XTSS",
+        "name": "Filtrate TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "wash..XTSS",
+        "name": "Wash reject TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "HLR",
+        "name": "Hydraulic loading rate",
+        "unit": "m/d",
+        "decimals": 0,
+        "comments": ""
+      }
+    ],
+    "popup": [
+      {
+        "symbol": "inp..Q",
+        "name": "Inlet flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "eff..Q",
+        "name": "Filtrate flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "wash..Q",
+        "name": "Wash reject flow rate",
+        "unit": "m3/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "inp..XTSS",
+        "name": "Inlet TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "eff..XTSS",
+        "name": "Filtrate TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "wash..XTSS",
+        "name": "Wash reject TSS",
+        "unit": "g.m-3",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "HLR",
+        "name": "Hydraulic loading rate",
+        "unit": "m/d",
+        "decimals": 0,
+        "comments": ""
+      },
+      {
+        "symbol": "ReducTSS,loc",
+        "name": "Local TSS concentration reduction",
+        "unit": "-",
+        "decimals": 3,
+        "comments": "local; does not detect downstream wash recycling"
+      },
+      {
+        "symbol": "DivertTSS,loc",
+        "name": "Local TSS load diversion to wash",
+        "unit": "-",
+        "decimals": 3,
+        "comments": "local"
+      },
+      {
+        "symbol": "ResidTSS",
+        "name": "TSS balance residual",
+        "unit": "g.d-1",
+        "decimals": 0,
+        "comments": "should be ~0"
+      },
+      {
+        "symbol": "HLRh",
+        "name": "Hydraulic loading rate",
+        "unit": "m/h",
+        "decimals": 2,
+        "comments": ""
+      },
+      {
+        "symbol": "CoagConflict",
+        "name": "Coagulant conflict (alum AND ferric both dosed)",
+        "unit": "-",
+        "decimals": 0,
+        "comments": "nonzero = set one dose to 0"
+      }
+    ]
+  }
+}

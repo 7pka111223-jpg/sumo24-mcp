@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "rung": "5b",
+  "stage": "complete",
+  "reason": "reactive-with-rates-zeroed matches non-reactive",
+  "n_compared": 70,
+  "n_exempt_by_design": 54,
+  "role_mismatch": [
+    "SO2"
+  ],
+  "exempt": [
+    "SBOD_5",
+    "SBOD_ult",
+    "SCCOD",
+    "SCOD",
+    "SKN",
+    "SNOx",
+    "SO2",
+    "SP"
+  ],
+  "worst_component": "XSTO",
+  "worst_rel": 2.8758924854085475e-10,
+  "differences": []
+}

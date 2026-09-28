@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "stage": "link",
+  "reason": "linked, and the DLL is a valid PE32+ x86-64 image",
+  "returncode": 0,
+  "returncode_is_not_evidence": true,
+  "link_success_line": true,
+  "errors": [],
+  "dll": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.dll",
+  "pe": {
+    "ok": true,
+    "bytes": 690688,
+    "machine": "PE32+ x86-64",
+    "sections": 11
+  },
+  "srcdir": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\src",
+  "command": [
+    "D:\\SUMO24\\slcompiler.exe",
+    "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.xml",
+    "-bp",
+    "D:\\SUMO24",
+    "-srcdir",
+    "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\src",
+    "-o",
+    "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.dll"
+  ],
+  "stdout_tail": "src/model_sumo_0024.cpp\"\nLinking...\nD:/SUMO24/build/mingw/bin/g++ -mthreads -Wl,-s -shared -o \"F:/Harness/Orca/SUMO24MCP/MCP/docs/reviews/live-2026-09-08/HH_ReviewProbe_v1/artifacts/review.dll\" \"F:/Harness/Orca/SUMO24MCP/MCP/docs/reviews/live-2026-09-08/HH_ReviewProbe_v1/artifacts/src/object_script.model.sumo\" -lsumocore -lQtCore4 -L\"D:/SUMO24\" -L\"D:/SUMO24/build/mingw/lib\" -Wl,--format=binary -Wl,variables.var -Wl,--format=default\n\nTask: Link - Success: F:/Harness/Orca/SUMO24MCP/MCP/docs/reviews/live-2026-09-08/HH_ReviewProbe_v1/artifacts/review.dll\nQt: Untested Windows version 6.2 detected!\n"
+}

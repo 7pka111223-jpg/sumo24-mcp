@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "stage": "run",
+  "job_id": 1,
+  "reason": "simulation did not report an end",
+  "rows": 79,
+  "ended": false,
+  "rejected": [],
+  "last_msgs": [
+    "530021 Set: Sumo__InitialStep to 1000",
+    "530041 Systemstate loaded from \"F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\implementation-2026-09-08\\runtime\\state.xml\".",
+    "530021 Set: Sumo__StopTime to 86400000",
+    "530021 Set: Sumo__DataComm to 360000",
+    "530020 Set mode: steady",
+    "530002 Simulation started."
+  ]
+}

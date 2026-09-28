@@ -1,0 +1,44 @@
+{
+  "unit": {
+    "emitted": true,
+    "reason": "ok",
+    "workbook": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.xlsx",
+    "icon_expected": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.emf",
+    "group_info": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH Review Audit Group Info.xlsx",
+    "gui_typing": {
+      "ok": true,
+      "faults": []
+    },
+    "sheets": [
+      "Help",
+      "Unit",
+      "Parameters",
+      "Code",
+      "Display",
+      "Popup"
+    ]
+  },
+  "plant": {
+    "emitted": true,
+    "reason": "ok",
+    "class_workbook": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\Plant classes\\Plant.xlsx",
+    "instance_workbook": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\Plant instances\\hh_reviewprobe_v1.xlsx",
+    "smt_entry_point": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\Plant instances\\hh_reviewprobe_v1.xlsx",
+    "build_root": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build",
+    "instance_symbol": "Plant",
+    "variable_namespace": "Sumo__Plant__Probe__*",
+    "unit_workbook": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.xlsx",
+    "reactive": false,
+    "precondition": null,
+    "structure_verified": {
+      "ok": true,
+      "blocks_checked": 4,
+      "faults": []
+    },
+    "next": [
+      "hh_compile_smt(instance=\"F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\\Plant instances\\hh_reviewprobe_v1.xlsx\", cwd=\"F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\build\") - the CWD must be the build root, because SMT24 writes smtlog.txt into the invocation CWD.",
+      "Never pass -nosort: it emits unordered algebra that silently never evaluates."
+    ]
+  },
+  "runtime_project": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\runtime"
+}

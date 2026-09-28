@@ -1,0 +1,38 @@
+{
+  "positive_flow": {
+    "ok": true,
+    "stage": "run",
+    "job_id": 1,
+    "rows": 11,
+    "ended": true,
+    "rejected": [],
+    "last": {
+      "Sumo__Time": 864000,
+      "Sumo__Plant__Inflpipe__Q": 3000,
+      "Sumo__Plant__Inflpipe__XTSS": 186.7168392847001,
+      "Sumo__Plant__Filtereff__Q": 2670,
+      "Sumo__Plant__Filtereff__XTSS": 70.76568208890133,
+      "Sumo__Plant__Filterwash__Q": 330,
+      "Sumo__Plant__Filterwash__XTSS": 1124.867111141617
+    },
+    "tss_load_residual_g_d": 2.9103830456733704e-11
+  },
+  "zero_flow": {
+    "ok": true,
+    "stage": "run",
+    "job_id": 2,
+    "rows": 11,
+    "ended": true,
+    "rejected": [],
+    "last": {
+      "Sumo__Time": 864000,
+      "Sumo__Plant__Inflpipe__Q": 0,
+      "Sumo__Plant__Inflpipe__XTSS": 186.7168392847001,
+      "Sumo__Plant__Filtereff__Q": 0,
+      "Sumo__Plant__Filtereff__XTSS": 70.76568208890133,
+      "Sumo__Plant__Filterwash__Q": 0,
+      "Sumo__Plant__Filterwash__XTSS": 1124.867111141617
+    },
+    "tss_load_residual_g_d": 0.0
+  }
+}

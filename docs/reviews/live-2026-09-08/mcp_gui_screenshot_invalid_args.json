@@ -1,0 +1,14 @@
+{
+  "elapsed_s": 0.004331600037403405,
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "Input validation error: 'output_dir' is a required property",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": true
+}

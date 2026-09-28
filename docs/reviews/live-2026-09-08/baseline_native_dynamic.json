@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "stage": "run",
+  "job_id": 1,
+  "rows": 11,
+  "ended": true,
+  "rejected": [],
+  "last": {
+    "Sumo__Time": 864000,
+    "Sumo__Plant__Influent1__Q": 7420,
+    "Sumo__Plant__Influent1__XTSS": 204.9264542286127,
+    "Sumo__Plant__Influent1__TCOD": 490.8458144370001,
+    "Sumo__Plant__Influent1__TBOD_5": 242.12,
+    "Sumo__Plant__Influent1__SNHx": 23.99999999999999,
+    "Sumo__Plant__Effluent1__Q": 7234.228959352884,
+    "Sumo__Plant__Effluent1__XTSS": 3.857006404308707,
+    "Sumo__Plant__Effluent1__TCOD": 32.72759112462312,
+    "Sumo__Plant__Effluent1__TBOD_5": 1.683376107493727,
+    "Sumo__Plant__Effluent1__SNHx": 0.4251352238803596
+  }
+}

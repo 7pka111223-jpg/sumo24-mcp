@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "wheel": "sumo24_mcp-0.2.0-py3-none-any.whl",
+  "wheel_sha256": "61fce2e930fe79663c173e770f8f9cb654259aecbe97664455f59d8a1588cd11",
+  "wheel_files": 86,
+  "installed_category": "SUMO24 MCP units",
+  "installed_family": "DynaSand",
+  "installed_files": {
+    "HH_DynaSand_v1.xlsx": "bfd1dbdc2165d36347e1ced0be1a27a8e441fe06791e9356073c5e665042f96a",
+    "DynaSand Group Info.xlsx": "dbfcb4ca00988e654a337151caaa6c9cc73e5ff80422d26899dbc4852a33de5a",
+    "HH_DynaSand_v1.emf": "2276ed6085bb73dc6000b9afd21717ff4ff0779b5360efb65b6d12815c6cc40e"
+  },
+  "legacy_unit_removed": true,
+  "source_release": {
+    "ok": true,
+    "reason": "bundled source release verified",
+    "release_id": "dynasand-1.0.0-20260908"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "rung": "5a",
+  "stage": "sentinel",
+  "reason": "derived variables are frozen at the 99999.9 sentinel",
+  "detail": [
+    "The algebraic layer never evaluated - this is a -nosort build. Rebuild WITHOUT -nosort; conservation cannot be judged here."
+  ],
+  "frozen": [
+    "Sumo__Plant__Inflpipe__Q",
+    "Sumo__Plant__CSTRoutp__Q",
+    "Sumo__Plant__Inflpipe__F_CB",
+    "Sumo__Plant__Inflpipe__F_CU",
+    "Sumo__Plant__Inflpipe__F_SALPHA",
+    "Sumo__Plant__Inflpipe__F_SAN",
+    "Sumo__Plant__Inflpipe__F_SBOD_5",
+    "Sumo__Plant__Inflpipe__F_SBOD_ult"
+  ],
+  "rows": 49
+}

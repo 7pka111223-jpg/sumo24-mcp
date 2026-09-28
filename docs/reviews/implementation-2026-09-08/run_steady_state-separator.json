@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "operation_id": "b4d8aed5bb2f4368befd64dff049ebbc"
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"job_id\": 2,\n  \"status\": \"finished\",\n  \"ok\": true,\n  \"mode\": \"steady-state\",\n  \"scenario\": \"none\",\n  \"effluent\": {\n    \"TSS_mgL\": 70.76568208890133,\n    \"BOD5_mgL\": 102.4085275,\n    \"COD_mgL\": 207.8,\n    \"sCOD_mgL\": 85.0,\n    \"NH4N_mgL\": 24.0,\n    \"NOxN_mgL\": 2e-40,\n    \"PO4P_mgL\": 2.0,\n    \"Q_m3d\": 21360.0,\n    \"time_days\": 0.0,\n    \"observations\": {\n      \"TSS_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__XTSS\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"BOD5_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__TBOD_5\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"COD_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__TCOD\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"sCOD_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__SCOD\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"NH4N_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__SNHx\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"NOxN_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__SNOx\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"PO4P_mgL\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__SPO4\",\n        \"unit\": \"mg/L\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      },\n      \"Q_m3d\": {\n        \"symbol\": \"Sumo__Plant__Filtereff__Q\",\n        \"unit\": \"m3/d\",\n        \"source\": \"native_datacomm\",\n        \"quality\": \"observed\"\n      }\n    }\n  },\n  \"compliance\": {\n    \"TSS\": {\n      \"metric\": \"TSS_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": 70.76568208890133,\n      \"limit\": 50.0,\n      \"status\": \"FAIL\",\n      \"margin\": -20.77\n    },\n    \"BOD5\": {\n      \"metric\": \"BOD5_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": 102.4085275,\n      \"limit\": 60.0,\n      \"status\": \"FAIL\",\n      \"margin\": -42.41\n    },\n    \"COD\": {\n      \"metric\": \"COD_mgL\",\n      \"unit\": \"mg/L\",\n      \"value\": 207.8,\n      \"limit\": 80.0,\n      \"status\": \"FAIL\",\n      \"margin\": -127.8\n    }\n  }\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

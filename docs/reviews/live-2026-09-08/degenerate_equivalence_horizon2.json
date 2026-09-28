@@ -1,0 +1,16 @@
+{
+  "ok": false,
+  "rung": "5b",
+  "stage": "prerequisite",
+  "reason": "both models must pass 5a before equivalence can be judged",
+  "reactive": {
+    "ok": false,
+    "reason": "50 component flux imbalance(s)",
+    "rows": 97
+  },
+  "nonreactive": {
+    "ok": false,
+    "reason": "48 component flux imbalance(s)",
+    "rows": 97
+  }
+}

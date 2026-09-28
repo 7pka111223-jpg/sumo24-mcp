@@ -1,1 +1,24 @@
-mcp>=1.0.0
+mcp>=1.27,<2
+PyYAML>=6,<7
+pywinauto>=0.6.9,<0.7 ; sys_platform == "win32"
+pillow>=10
+pyperclip>=1.8
+python-docx>=1.1
+matplotlib>=3.8
+
+# Unit-workbook emitter (ticket 02a/02b). MANDATORY and not interchangeable:
+# openpyxl emits t="inlineStr" and drops sharedStrings.xml, which the SMT rejects with
+# "File error". openpyxl is used for READING only.
+xlsxwriter>=3.2
+openpyxl>=3.1
+
+# Type B model-base fork (ticket 11/12 Phase G2). Needed ONLY to INSERT rows into a
+# macro-bearing .xlsm; a fork with no edits is a byte-identical copy and needs nothing.
+# Not interchangeable either: an openpyxl round trip of Sumo2C.xlsm drops 32 OOXML parts
+# (sharedStrings.xml, calcChain.xml, drawings) and the SMT then fails with "File error".
+# Excel must be installed for this to do anything.
+pywin32>=306 ; sys_platform == "win32"
+
+# Tools-reference PDF generator (PY/generate_tools_reference.py). Build-time only; the
+# MCP server does not import it.
+reportlab>=4.0

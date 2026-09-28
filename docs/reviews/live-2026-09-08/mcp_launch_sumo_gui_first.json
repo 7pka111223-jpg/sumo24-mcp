@@ -1,0 +1,14 @@
+{
+  "elapsed_s": 22.56057490000967,
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"ok\": true,\n  \"already_running\": false,\n  \"window\": {\n    \"title\": \"SUMO\",\n    \"left\": 720,\n    \"top\": 405,\n    \"right\": 1200,\n    \"bottom\": 675\n  }\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

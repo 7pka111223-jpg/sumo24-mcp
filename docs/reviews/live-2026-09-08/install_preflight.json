@@ -1,0 +1,63 @@
+{
+  "installed": false,
+  "dry_run": true,
+  "reason": "dry run - nothing written",
+  "unit_name": "HH_ReviewProbe_v1",
+  "destination": "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit",
+  "would_write": [
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.xlsx",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH_ReviewProbe_v1.emf",
+    "D:\\SUMO24\\Dir\\My Process Code\\Process Units\\99 HH Review Audit\\HH Review Audit\\HH Review Audit Group Info.xlsx"
+  ],
+  "preflight": {
+    "ok": true,
+    "unit_name": "HH_ReviewProbe_v1",
+    "unit_dir": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1",
+    "workbook": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.xlsx",
+    "icon": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.emf",
+    "group_info": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH Review Audit Group Info.xlsx",
+    "dll": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.dll",
+    "checks": [
+      {
+        "check": "unit workbook",
+        "ok": true,
+        "path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.xlsx"
+      },
+      {
+        "check": "icon (.emf)",
+        "ok": true,
+        "warn": false,
+        "path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH_ReviewProbe_v1.emf",
+        "note": "GUI-only; a missing icon cannot break a compile (ticket 14)"
+      },
+      {
+        "check": "Group Info",
+        "ok": true,
+        "warn": false,
+        "path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\HH Review Audit Group Info.xlsx",
+        "note": "without it the group has no SortingPriority/DefaultUnit and the GUI cannot resolve the palette entry (ticket 14); it must be a SIBLING of the unit workbooks in the family folder [measured 2026-09-07]"
+      },
+      {
+        "check": "compiled DLL",
+        "ok": true,
+        "warn": false,
+        "path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\artifacts\\review.dll",
+        "note": "installing an uncompiled unit puts a unit on the drawing board that fails the first time it is used"
+      },
+      {
+        "check": "rung-1 emission gate",
+        "ok": true,
+        "path": "F:\\Harness\\Orca\\SUMO24MCP\\MCP\\docs\\reviews\\live-2026-09-08\\HH_ReviewProbe_v1\\unit_spec.json",
+        "note": "lint clean, spec accepted, magnitudes confirmed"
+      },
+      {
+        "check": "vendor name collision (ticket 15)",
+        "ok": true,
+        "path": "HH_ReviewProbe_v1",
+        "note": "no collision; name well-formed"
+      }
+    ],
+    "warnings": [],
+    "reason": "preflight clean"
+  }
+}

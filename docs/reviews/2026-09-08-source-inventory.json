@@ -1,0 +1,986 @@
+{
+  "scope": "PY Python source, including test scripts; AST parse and SHA256 inventory",
+  "files": [
+    {
+      "path": "PY/academic_bundle.py",
+      "lines": 668,
+      "sha256": "8b0fe7ab7099d830de2527b70ecf9a44f432a6cf7aed9ac7098d46b88c8deb02",
+      "top_level_definitions": [
+        "_safe",
+        "_round",
+        "_derive_effluent",
+        "_influent_rows",
+        "_effluent_rows",
+        "_bioreactor_rows",
+        "_removal_rows",
+        "_figures",
+        "_excel",
+        "_csv",
+        "build_bundle"
+      ]
+    },
+    {
+      "path": "PY/build_pdf_v8.py",
+      "lines": 296,
+      "sha256": "e2b82acaae5152dd5ed836779f99d3b78de99ed40c2a6fb058b791c0e0d89e21",
+      "top_level_definitions": [
+        "_clean",
+        "_safe",
+        "classify"
+      ]
+    },
+    {
+      "path": "PY/continuity_checker.py",
+      "lines": 871,
+      "sha256": "4c800db76b407c2b8d95633e3eb8c23bac7deaeb1fba33e6b368cfa87021a7c1",
+      "top_level_definitions": [
+        "UnresolvedExpression",
+        "resolve",
+        "_column_index_by_header",
+        "load_symbol_map",
+        "_read_model_sheet",
+        "read_gujer_matrix",
+        "_row_is_blank_beyond",
+        "_numeric",
+        "check_model_base_continuity",
+        "_check_gujer",
+        "_largest",
+        "theoretical_cod_cmole",
+        "_cmole_ram",
+        "derive_composition",
+        "check_self_consistency",
+        "check_spec",
+        "_check_spec_processes",
+        "self_test",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/count_tools.py",
+      "lines": 17,
+      "sha256": "92cb848a477cfc5219c39c568244c0332cbdbd26657bff54bf4201080da61e4e",
+      "top_level_definitions": []
+    },
+    {
+      "path": "PY/dimension_checker.py",
+      "lines": 1640,
+      "sha256": "5386b1b88035b33cc63285f7dd33500f7f11b787dee59eb0ce28b097893b0648",
+      "top_level_definitions": [
+        "Dimension",
+        "UnparseableUnit",
+        "_fold_unicode",
+        "_bind_qualifiers",
+        "_split_ops",
+        "_parse_paren_group",
+        "_qual_with_exp",
+        "_factor_dimension",
+        "_parse_part",
+        "_Unit",
+        "parse_unit",
+        "_tokenize",
+        "_ExprParser",
+        "_DimResult",
+        "expression_substances",
+        "resolve_expression_dims",
+        "load_systemcode_constants",
+        "_lookup_for",
+        "_read_rows",
+        "_symbol_unit_from_sheet",
+        "_extract_code_rows",
+        "check_workbook",
+        "_register_symbol",
+        "_has_unreliable_reasons",
+        "_declared_unit_of",
+        "check_spec",
+        "_coeff_unit",
+        "self_test",
+        "_mutate_first_unit",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/dtt_editor.py",
+      "lines": 269,
+      "sha256": "07889806b1d4b23d26d50d9951984983fbac90440364c827b5ee2f382eacdf02",
+      "top_level_definitions": [
+        "cmd_rename_unit",
+        "cmd_change_unit_type",
+        "cmd_remove_stream",
+        "cmd_set_stream_flow",
+        "cmd_remove_controller",
+        "cmds_modify_controller",
+        "tx_begin",
+        "tx_list",
+        "tx_commit",
+        "tx_rollback",
+        "_resolve_snapshot",
+        "plan_command_batch",
+        "diff_units_streams",
+        "read_controllers_from_manifest",
+        "_require_ident",
+        "_slug"
+      ]
+    },
+    {
+      "path": "PY/dynamita_compat.py",
+      "lines": 310,
+      "sha256": "4c3bd582ab9a4973a3eeb230b9fb76343bb08ffdd8b3d7f25ffb50d38364e821",
+      "top_level_definitions": [
+        "set_active_project",
+        "get_queue",
+        "get_overrides",
+        "clear_queue",
+        "flush_to_userscript",
+        "_executeCommand",
+        "_set",
+        "_getVariableNames",
+        "_candidate_ss_paths",
+        "_params_txt_lookup",
+        "_ss_lookup",
+        "_get",
+        "install"
+      ]
+    },
+    {
+      "path": "PY/generate_tools_reference.py",
+      "lines": 509,
+      "sha256": "f768f806d476b673393ea1492cbef3fdd8f5a38aafac715f1fc2caae12175897",
+      "top_level_definitions": [
+        "_extract_desc",
+        "tool_table"
+      ]
+    },
+    {
+      "path": "PY/generate_wwtp_template.py",
+      "lines": 514,
+      "sha256": "16785cf0253e0096ae102e62ac4f72342835da1f034a6a80011205eb7fbc1364",
+      "top_level_definitions": [
+        "hdr",
+        "title",
+        "widths",
+        "input_block"
+      ]
+    },
+    {
+      "path": "PY/hh_tools.py",
+      "lines": 538,
+      "sha256": "bb9e653f8e899c30a6e5ad979428ea252ba49e559e4bee7b32d4c37550482f79",
+      "top_level_definitions": [
+        "_try",
+        "_schema",
+        "_load_spec",
+        "_unavailable",
+        "_not_implemented",
+        "dispatch",
+        "_dispatch",
+        "_save_spec",
+        "_install",
+        "_check_environment",
+        "_run_ladder"
+      ]
+    },
+    {
+      "path": "PY/html_schematic_io.py",
+      "lines": 142,
+      "sha256": "0bcfd0ea1a77870dcd2fb82a374388a43e45faddbbb0cf17bf03d9e462fcba65",
+      "top_level_definitions": [
+        "update_schematic_in_html",
+        "read_schematic_from_html"
+      ]
+    },
+    {
+      "path": "PY/icon_emitter.py",
+      "lines": 120,
+      "sha256": "e31b302d2fd09e9e857a72d899ca145ddfffa32991c8c8dcf761ace97b937112",
+      "top_level_definitions": [
+        "is_valid_emf",
+        "emit_placeholder",
+        "emit_from_template"
+      ]
+    },
+    {
+      "path": "PY/model_base_diff.py",
+      "lines": 222,
+      "sha256": "087a5b928e7874bafe30b11739451575f15fcfca2d52af1a5e25040211bfb7c6",
+      "top_level_definitions": [
+        "_cells",
+        "read_value_sheet",
+        "read_gujer",
+        "read_model_base",
+        "diff_model_bases",
+        "additive_only_gate",
+        "stamp_verification_state",
+        "type_b_admission"
+      ]
+    },
+    {
+      "path": "PY/model_base_fork.py",
+      "lines": 395,
+      "sha256": "563a31d0f24b25c87567ad66cddafc78e0f35750ae64d2b5eed848942b04ec83",
+      "top_level_definitions": [
+        "shipped_model_bases",
+        "_under_install",
+        "verify_parts_preserved",
+        "_make_writable",
+        "_remove",
+        "_Excel",
+        "_header_map",
+        "_find_block",
+        "_append_rows",
+        "_apply_additions",
+        "fork_model_base"
+      ]
+    },
+    {
+      "path": "PY/pipeline/__init__.py",
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "top_level_definitions": []
+    },
+    {
+      "path": "PY/pipeline/build.py",
+      "lines": 267,
+      "sha256": "0ff3a8d01ad929bbba4b91c109d3456da0457854839543c973a0495cdc117202",
+      "top_level_definitions": [
+        "_make_build_instructions",
+        "build_pack",
+        "generate_controllers_scs"
+      ]
+    },
+    {
+      "path": "PY/pipeline/dynamic_inputs.py",
+      "lines": 273,
+      "sha256": "5461e25d58fb3dfd6be0f1f998fc7f7f6023736d0b2290a0d67075d1aa2ee943",
+      "top_level_definitions": [
+        "generate_dynamic_inputs",
+        "validate_dynamic_tsv",
+        "_constant_profile",
+        "_diurnal_profile",
+        "_storm_profile",
+        "_seasonal_temp_profile",
+        "_from_excel"
+      ]
+    },
+    {
+      "path": "PY/pipeline/engineering.py",
+      "lines": 374,
+      "sha256": "c2dbb451e852025f69a20a29822de921178b11cd7a97619e406b5fa52974cceb",
+      "top_level_definitions": [
+        "check_srt",
+        "check_hrt",
+        "check_fm_ratio",
+        "check_oxygen_demand",
+        "check_aeration_supply",
+        "check_mass_balance",
+        "check_alkalinity",
+        "check_takacs_settler",
+        "run_engineering_checks",
+        "_result",
+        "_fail",
+        "_extract_summary"
+      ]
+    },
+    {
+      "path": "PY/pipeline/hashing.py",
+      "lines": 119,
+      "sha256": "3c25435c8a13d3d6a99f4ed4dad571c4b855b99f5a152e3f1451a561290959a3",
+      "top_level_definitions": [
+        "hash_schematic",
+        "hash_excel",
+        "hash_json",
+        "hash_pack"
+      ]
+    },
+    {
+      "path": "PY/pipeline/manifest.py",
+      "lines": 185,
+      "sha256": "638804d1a6be2a9d11e8f6572c10ac6441c7f0d33ec7ec6e14a53fb28833fa59",
+      "top_level_definitions": [
+        "manifest_path",
+        "load",
+        "save",
+        "new_manifest",
+        "get_stage",
+        "set_stage",
+        "last_passed_hash",
+        "mark_downstream_stale",
+        "record",
+        "artefact_path"
+      ]
+    },
+    {
+      "path": "PY/pipeline/seeding.py",
+      "lines": 258,
+      "sha256": "3d76035b10021eed2f7541f718ad3afc430b502ce965e2253500b42a35466fbc",
+      "top_level_definitions": [
+        "_unit_name_by_id",
+        "seed_excel_from_schematic"
+      ]
+    },
+    {
+      "path": "PY/pipeline/snapshot.py",
+      "lines": 92,
+      "sha256": "013da79852f89c78d3d9c0c95a85cefb0691491f7f7951712fe0cd6215449c9c",
+      "top_level_definitions": [
+        "snapshot",
+        "list_snapshots",
+        "revert",
+        "prune"
+      ]
+    },
+    {
+      "path": "PY/pipeline/static_inputs.py",
+      "lines": 303,
+      "sha256": "b57480941d0b80e75f5b1c05e19d355d6bd968a100767a6fa8a76ead56124bd4",
+      "top_level_definitions": [
+        "resolve_static_inputs",
+        "build_scs_script",
+        "write_static_inputs"
+      ]
+    },
+    {
+      "path": "PY/plant_emitter.py",
+      "lines": 398,
+      "sha256": "7360a37d68c760d0e9498ab12c227273038df46734c519ef3d7f8acf1792e2b1",
+      "top_level_definitions": [
+        "declared_symbols",
+        "resolve_unit_class",
+        "check_reactive_precondition",
+        "_help_sheet",
+        "_emit_plant_class",
+        "_emit_plant_instance",
+        "emit_test_plant",
+        "verify_plant_workbook"
+      ]
+    },
+    {
+      "path": "PY/prepare_project.py",
+      "lines": 78,
+      "sha256": "f94bc9a9e14892e999e2cc2c37a07892744366f5a86e2c2a0142bd6dedc69515",
+      "top_level_definitions": [
+        "main"
+      ]
+    },
+    {
+      "path": "PY/schematic_parser.py",
+      "lines": 357,
+      "sha256": "cb2fafc991ab98417862ee0e6d4026aae4407763db33b28d06c2a05cbd974600",
+      "top_level_definitions": [
+        "extract_json_from_html",
+        "load_schematic",
+        "validate_schematic",
+        "_header_lines",
+        "schematic_to_commands",
+        "schematic_to_dtt_actions",
+        "compare_to_model",
+        "schematic_to_sumoslang",
+        "summarise"
+      ]
+    },
+    {
+      "path": "PY/server.py",
+      "lines": 13307,
+      "sha256": "1385e881035eed5253278b5fc08f543801f91005fee15c7340daf1c2c3103714",
+      "top_level_definitions": [
+        "_classify",
+        "_val_read_var",
+        "_val_structure",
+        "_val_influent",
+        "_val_mass_balance_pre",
+        "_val_mass_balance_post",
+        "_val_mlss_health",
+        "_val_srt_fm",
+        "_val_do_levels",
+        "_val_oxygen_supply",
+        "_val_hydraulic",
+        "_val_asm_kinetics",
+        "_val_convergence",
+        "_val_plausibility",
+        "_val_full_model",
+        "_val_post_simulation",
+        "_opt_scan_parameter_sensitivity",
+        "_opt_was_for_srt",
+        "_opt_kla_for_do",
+        "_diag_nitrification",
+        "_diag_bulking",
+        "_diag_phosphorus",
+        "_diag_recommendations",
+        "_econ_opex",
+        "_econ_ghg",
+        "_viz_time_series_chart",
+        "_apply_academic_style",
+        "_exp_load_job_csv",
+        "_exp_extract_column",
+        "_exp_time_column",
+        "_exp_stats",
+        "_exp_goodness_of_fit",
+        "_exp_default_output_dir",
+        "_exp_save_fig",
+        "_exp_publication_time_series",
+        "_exp_calibration_parity_plot",
+        "_exp_scenario_comparison_bar",
+        "_exp_tornado_diagram",
+        "_exp_box_plot_distributions",
+        "_apply_booktabs_cell_borders",
+        "_exp_academic_results_docx",
+        "_latex_escape",
+        "_exp_latex_results_table",
+        "_exp_statistical_summary_xlsx",
+        "_exp_academic_report_docx",
+        "_exp_multi_file_batch_comparison",
+        "_exp_mass_balance_diagram",
+        "_arrhenius",
+        "_correct_asm_params",
+        "_msg_callback",
+        "_data_callback",
+        "_read_simulation_settings",
+        "_build_commands",
+        "_summarise",
+        "_check_compliance",
+        "_make_ds",
+        "_apply_scenario",
+        "_augment_job_record",
+        "_JobsView",
+        "_dataset_default_path",
+        "_open_dataset",
+        "_parse_dataset_rows",
+        "_resolve_sumo_variable",
+        "list_tools",
+        "call_tool",
+        "_exp_generate_wwtp_template_xlsx",
+        "_exp_read_wwtp_template",
+        "_exp_validate_wwtp_template",
+        "_exp_build_model_from_template",
+        "_require_schematic_parser",
+        "_load_schematic_either",
+        "_exp_import_schematic_from_html",
+        "_exp_build_model_from_schematic",
+        "_exp_compare_schematic_to_model",
+        "_exp_generate_sumoslang_from_schematic",
+        "_exp_list_schematic_unit_types",
+        "_exp_diagnose_sumo_file",
+        "_root_is_sumoproject",
+        "_exp_scan_sumo_directory",
+        "_exp_check_dll_companion",
+        "_exp_repair_sumo_file",
+        "_exp_diagnose_sumo_crash",
+        "_exp_validate_sumo_environment",
+        "_exp_list_sumo_diagnostics",
+        "_require_compiler",
+        "_resolve_schematic",
+        "_exp_compile_schematic_to_sumo",
+        "_exp_build_sumo_from_html",
+        "_exp_preview_sumo_manifest",
+        "_exp_attach_companion_dll",
+        "_exp_verify_sumo_file_against_schematic",
+        "_exp_read_sumo_manifest",
+        "_require_pack",
+        "_resolve_schematic_from_args",
+        "_exp_build_sumo_pack",
+        "_exp_apply_schematic_to_baseline",
+        "_require_native",
+        "_verify_native_build",
+        "_exp_build_native_sumo",
+        "_exp_topology_match_report",
+        "_exp_validate_sumoslang",
+        "_read_dll_symbols",
+        "_read_dll_symbols_strings",
+        "_exp_verify_dll_matches_schematic",
+        "_exp_update_schematic_in_html",
+        "_exp_next_step_for_project",
+        "_workflow_step",
+        "_exp_apply_template_auto_fixes",
+        "_pipeline_imports",
+        "_pipe_check",
+        "_detect_stale",
+        "_recommended_action",
+        "_status_payload",
+        "_read_params_from_excel",
+        "_exp_pipeline_init",
+        "_exp_pipeline_status",
+        "_exp_pipeline_advance",
+        "_exp_pipeline_revert",
+        "_exp_pipeline_describe",
+        "_exp_stage1_open_schematic",
+        "_exp_stage1_validate_schematic",
+        "_closest_type",
+        "_exp_stage2_open_data",
+        "_exp_stage2_validate_parameters",
+        "_exp_stage3_run_engineering_checks",
+        "_exp_stage4_define_static_inputs",
+        "_exp_stage4_validate_static_inputs",
+        "_exp_stage5_generate_dynamic_inputs",
+        "_exp_stage5_validate_dynamic_inputs",
+        "_exp_stage6_add_controller",
+        "_exp_stage6_validate_controllers",
+        "_exp_stage7_build",
+        "_exp_stage8_verify",
+        "_dte_guard",
+        "_dispatch_dtt",
+        "_ff_live_units",
+        "_ff_live_streams",
+        "_exp_rename_unit_process",
+        "_exp_change_unit_type",
+        "_exp_remove_flow_connection",
+        "_exp_set_stream_flow_rate",
+        "_exp_list_controllers",
+        "_exp_modify_controller",
+        "_exp_remove_controller",
+        "_exp_begin_edit_transaction",
+        "_exp_commit_edit_transaction",
+        "_exp_rollback_edit_transaction",
+        "_exp_apply_dtt_command_batch",
+        "_exp_diff_inmemory_vs_disk",
+        "_gui_guard",
+        "_exp_launch_sumo_gui",
+        "_exp_gui_add_unit_to_canvas",
+        "_exp_gui_save_sumo",
+        "_exp_gui_screenshot",
+        "_exp_gui_focus_sumo",
+        "_exp_gui_get_window_rect",
+        "_exp_gui_click_at",
+        "_exp_gui_drag_from_to",
+        "_exp_gui_send_keys",
+        "_exp_gui_type_text",
+        "_exp_gui_calibrate_palette_item",
+        "_exp_gui_list_palette_items",
+        "_exp_gui_drop_unit_at",
+        "_exp_gui_open_unit_properties",
+        "_exp_gui_set_param_in_dialog",
+        "_exp_gui_close_dialog",
+        "_exp_gui_connect_units",
+        "_exp_gui_switch_tab",
+        "_exp_gui_capture_palette_template",
+        "_exp_gui_find_icon_by_template",
+        "_exp_gui_drop_unit_by_template",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/slc_runner.py",
+      "lines": 147,
+      "sha256": "1361abf4f94d130e404d455489964ef4e913ec25a283c73c7713644a967744cf",
+      "top_level_definitions": [
+        "_linker_env",
+        "verify_pe32plus",
+        "run_slcompiler"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_bb_cc.py",
+      "lines": 193,
+      "sha256": "f11176ebf7dbe281e899267f13bc2fbbcf26a0851fd952d525aad4959da7692b",
+      "top_level_definitions": [
+        "diag"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_build_cleanup.py",
+      "lines": 167,
+      "sha256": "3d4d33c4309e7678f4f0f609411c2ca64b80899d23be1f04f72eb608a7a85953",
+      "top_level_definitions": [
+        "_ok",
+        "_fabricate_debris",
+        "_listing",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_dd.py",
+      "lines": 181,
+      "sha256": "2ed73f232b9f3932d0d7265f8ee84ce214474db02266667c7b2ef5c4045f6c4e",
+      "top_level_definitions": [
+        "test_pack_generates_required_files",
+        "test_sumoslang_lints_clean",
+        "test_schematic_json_round_trips",
+        "test_overwrite_flag",
+        "test_baseline_apply_refuses_without_baseline",
+        "test_empty_schematic_raises",
+        "test_sumo_loads_pack_if_available",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_offline_extract.py",
+      "lines": 123,
+      "sha256": "eb3e315900346b9b96ae9cef46ac2e6b0586962abb9446a606c98423d05944be",
+      "top_level_definitions": []
+    },
+    {
+      "path": "PY/smoke_test_phase_b2.py",
+      "lines": 174,
+      "sha256": "f7baf92cd5c5291d9f97543c1a90e7feb0fe90efc7847ee0f7c553863f0719ae",
+      "top_level_definitions": [
+        "check",
+        "_fork",
+        "_find_symbol_row",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_phase_c.py",
+      "lines": 206,
+      "sha256": "9d063be1476ca9790295c3dc09a15a77418b6f6637cc7893775218030136629f",
+      "top_level_definitions": [
+        "check",
+        "_accepted_spec",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_phase_d.py",
+      "lines": 227,
+      "sha256": "8f40a3c4b04824c4a771205340817d0e27e43dbeb8e338d7f6416036adab217a",
+      "top_level_definitions": [
+        "check",
+        "_rewrite_class",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_phase_e.py",
+      "lines": 122,
+      "sha256": "6d171e3034b9498a67e05cc034efd510ed8c539f3cb19149b0204ce958c53950",
+      "top_level_definitions": [
+        "check",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_phase_g.py",
+      "lines": 502,
+      "sha256": "06590c6a63ac556f003f4d87bf8b87f91e0bce604abddfb94a611f53959ec208",
+      "top_level_definitions": [
+        "check",
+        "skip",
+        "cellmap",
+        "sha",
+        "group_a",
+        "group_b",
+        "group_c",
+        "group_d",
+        "group_e",
+        "group_f",
+        "group_g",
+        "group_h",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_pipeline.py",
+      "lines": 417,
+      "sha256": "111336a9cc420ceaad226501db802d853a2c8f9050875c8209b5740589d435b6",
+      "top_level_definitions": [
+        "_ok",
+        "_section",
+        "test_manifest",
+        "test_hashing",
+        "test_snapshot",
+        "test_seeding",
+        "test_engineering",
+        "test_static_inputs",
+        "test_dynamic_inputs",
+        "test_full_pipeline",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smoke_test_spec_review.py",
+      "lines": 215,
+      "sha256": "ec796a66b0e387503272f34bc7533ab216732e5d66e9715a7374bfa1d83e351a",
+      "top_level_definitions": [
+        "check",
+        "_fill",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/smt_runner.py",
+      "lines": 222,
+      "sha256": "bb2d136533a7cbeca7e3f4799013581d0425e60a921f61357d4a5efa98bba3ab",
+      "top_level_definitions": [
+        "_read_log",
+        "error_lines",
+        "run_smt",
+        "declared_variables",
+        "dangling_symbols"
+      ]
+    },
+    {
+      "path": "PY/spec_builder.py",
+      "lines": 342,
+      "sha256": "ae5eed8df518c51acc8f1d8e26fb7bfa3a4b6d5014544c120f193454220be940",
+      "top_level_definitions": [
+        "_coeff",
+        "_now",
+        "_skeleton",
+        "compose_spec",
+        "describe_to_spec",
+        "_resolve",
+        "edit_spec"
+      ]
+    },
+    {
+      "path": "PY/spec_review.py",
+      "lines": 591,
+      "sha256": "abf84d061026237632afed43e7744455e6ecd2a990414c09be13ba2be84ccd7b",
+      "top_level_definitions": [
+        "_walk",
+        "_is_coefficient",
+        "iter_values",
+        "_as_magnitude",
+        "collect_required",
+        "collect_weak",
+        "collect_unparseable",
+        "collect_routing_faults",
+        "_value_fingerprint",
+        "collect_uncorroborated",
+        "collect_unconfirmed",
+        "lint",
+        "acceptance_of",
+        "may_emit",
+        "accept",
+        "_describe",
+        "_rule",
+        "render",
+        "main"
+      ]
+    },
+    {
+      "path": "PY/sumo_compiler.py",
+      "lines": 475,
+      "sha256": "a7db1353cc6071150d661ddf1eccc8eb75188989d94e020713f145cad2326895",
+      "top_level_definitions": [
+        "_xe",
+        "build_manifest_xml",
+        "build_state_xml",
+        "build_metadata_json",
+        "preview_sumo_files",
+        "compile_to_sumo",
+        "build_from_html",
+        "read_sumo_manifest",
+        "verify_against_schematic",
+        "attach_companion_dll"
+      ]
+    },
+    {
+      "path": "PY/sumo_gui.py",
+      "lines": 1143,
+      "sha256": "fd4db8d32a5319f9c31819d3fa306a9c4a595e7b161b86c1b08626a32f2bb339",
+      "top_level_definitions": [
+        "layout_path",
+        "load_layout",
+        "write_layout_skeleton",
+        "deps_check",
+        "_require_pwa",
+        "_connect_main_window",
+        "launch_sumo_gui",
+        "gui_add_unit_to_canvas",
+        "gui_save_sumo",
+        "gui_screenshot",
+        "_win_and_rect",
+        "_to_screen",
+        "_save_layout",
+        "gui_focus_sumo",
+        "gui_get_window_rect",
+        "gui_click_at",
+        "gui_drag_from_to",
+        "gui_send_keys",
+        "gui_type_text",
+        "gui_calibrate_palette_item",
+        "gui_list_palette_items",
+        "gui_drop_unit_at",
+        "gui_open_unit_properties",
+        "gui_set_param_in_dialog",
+        "gui_close_dialog",
+        "gui_connect_units",
+        "gui_switch_tab",
+        "_templates_dir",
+        "_require_cv2",
+        "gui_capture_palette_template",
+        "gui_find_icon_by_template",
+        "gui_drop_unit_by_template"
+      ]
+    },
+    {
+      "path": "PY/sumo_native.py",
+      "lines": 758,
+      "sha256": "c1e8b67aa8c93840fac51b0ddacf7f1ebb0266b2eef55908b4cbdf40c43f477c",
+      "top_level_definitions": [
+        "_classify_member",
+        "_sha256",
+        "parse_baseline",
+        "_load_schematic",
+        "_baseline_class_of",
+        "auto_match_units",
+        "topology_match_report",
+        "rewrite_parameters_txt",
+        "_fmt_value",
+        "rewrite_influent_table",
+        "rewrite_notes_rtf",
+        "_rtf_escape",
+        "build_native_sumo"
+      ]
+    },
+    {
+      "path": "PY/sumo_offline.py",
+      "lines": 466,
+      "sha256": "70a81f7e985a3ecf02eee1690e1081c87608d5174c605019214467a59314e719",
+      "top_level_definitions": [
+        "read_parameters_txt",
+        "parse_ss_xml",
+        "read_influent_tsv",
+        "influent_stats",
+        "_read_member",
+        "read_ss_member",
+        "_read_ss_cached",
+        "read_ss_cached",
+        "_is_solids_symbol",
+        "_is_volatile_solids_symbol",
+        "_unit_solids_sum",
+        "_layer0",
+        "_avg",
+        "_extract_effluent",
+        "_list_clarifier_units",
+        "_list_cstr_units",
+        "extract_sumo_data"
+      ]
+    },
+    {
+      "path": "PY/sumo_pack.py",
+      "lines": 453,
+      "sha256": "053095f2cbd566c714cf492c3dcd18cab16a1ace13c40f27accf639baa251d54",
+      "top_level_definitions": [
+        "validate_schematic",
+        "build_sumoslang",
+        "_sumoslang_unit_block",
+        "validate_sumoslang",
+        "build_apply_scs",
+        "build_pack",
+        "apply_to_baseline",
+        "_read_state_variable_names"
+      ]
+    },
+    {
+      "path": "PY/sumoslang_author.py",
+      "lines": 200,
+      "sha256": "874cb102a421ef339982e2270762096c2be587bd5fd5d7f9dd3316897a9fe76d",
+      "top_level_definitions": [
+        "slug_dir",
+        "clean_build",
+        "snapshot_build",
+        "revert_build",
+        "qualified_name",
+        "is_well_formed",
+        "vendor_unit_names",
+        "check_collision",
+        "allocate_slug"
+      ]
+    },
+    {
+      "path": "PY/tools/check_dispatch_coverage.py",
+      "lines": 13,
+      "sha256": "5021688d2a8f59dcd3f6a5e6d32f806e7ea92f4ccacd91638e9602a04d4d3615",
+      "top_level_definitions": []
+    },
+    {
+      "path": "PY/tools/check_registration_runtime.py",
+      "lines": 101,
+      "sha256": "8fe1b6c7616e76abc5af21edb74fc37b55b9e95d32567fb1e3f36bb8e75d5028",
+      "top_level_definitions": [
+        "main"
+      ]
+    },
+    {
+      "path": "PY/tools/repro_fabricated_provenance.py",
+      "lines": 51,
+      "sha256": "060e80971b768ced7e1d3d7b2c6e29347098014178d0617859faf25414a164aa",
+      "top_level_definitions": []
+    },
+    {
+      "path": "PY/tools/repro_required_sentinel.py",
+      "lines": 71,
+      "sha256": "af7b8bb321ccbed90c17acf447b79119d93140c840381704e682c228af4d464f",
+      "top_level_definitions": [
+        "main"
+      ]
+    },
+    {
+      "path": "PY/tools/repro_substance_crossing.py",
+      "lines": 176,
+      "sha256": "65688fd08391501d2069830924b7797ca423bcb138e68fe17b36c4065f6e9d10",
+      "top_level_definitions": [
+        "_demo",
+        "_fixture",
+        "regression",
+        "_mk",
+        "regression_review"
+      ]
+    },
+    {
+      "path": "PY/tracer_test.py",
+      "lines": 335,
+      "sha256": "863fc93bd39e33a916499c1d196e3523ce14bb8b47774b6b3de180f0896c7826",
+      "top_level_definitions": [
+        "_xml_text",
+        "zero_rate_commands",
+        "port_flux_map",
+        "state_variable_roles",
+        "_sentinel_guard",
+        "run_model",
+        "rung5a_conservative_tracer",
+        "rung5b_degenerate_equivalence"
+      ]
+    },
+    {
+      "path": "PY/unit_emitter.py",
+      "lines": 545,
+      "sha256": "ca8b9a6b60adffff9ce6547fde47a823cea6b551beaf11bc6a9a1aec58f5ff97",
+      "top_level_definitions": [
+        "EmitRefused",
+        "_Sheet",
+        "_s",
+        "_native",
+        "_coeff",
+        "_write_help",
+        "_write_unit",
+        "_write_parameters",
+        "_write_code",
+        "_write_display",
+        "validate_spec_shape",
+        "emit_unit",
+        "emit_group_info",
+        "_gui_numberish",
+        "verify_gui_typing",
+        "verify_no_title_header_gap"
+      ]
+    },
+    {
+      "path": "PY/unit_installer.py",
+      "lines": 486,
+      "sha256": "b24e240ee66aaf2dd81089f1bb8e6c7f567d188d0cd429aa35f68f35b02326e1",
+      "top_level_definitions": [
+        "InstallPathError",
+        "_assert_overlay",
+        "_now",
+        "_sha",
+        "_find_slug",
+        "_locate_group_info",
+        "preflight",
+        "install_process_unit",
+        "install_model_base",
+        "uninstall_process_unit",
+        "list_installed"
+      ]
+    },
+    {
+      "path": "PY/unit_type_registry.py",
+      "lines": 247,
+      "sha256": "3b5093a1eb37d08ee937d86ce958027108f194bcf932e011b14287a014de2c65",
+      "top_level_definitions": [
+        "is_known_unit_type",
+        "get_unit_def"
+      ]
+    }
+  ]
+}

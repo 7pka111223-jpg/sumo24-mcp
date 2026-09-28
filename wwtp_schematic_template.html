@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WWTP Schematic Builder — SUMO24 MCP</title>
+<meta name="generator" content="sumo24-mcp v1.2">
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     STRUCTURED DATA FOR THE MCP SERVER
+     The MCP server parses the <script id="schematic-data"> block at runtime.
+     The visible UI is for human editing; the JSON is the source of truth.
+     v1.1 adds: explicit Configuration Mode / Connection Mode / View Mode toggle,
+                connection-loop support, stream-type picker, inline validation,
+                multi-segment continuous connecting, Delete-key removal,
+                better visual feedback, and pretty SVG ports with hover highlight.
+     v1.2 adds: dedicated RAS-Flow & WAS-Flow boundary components (analogous
+                to Influent/Effluent), Sludge Splitter unit, smart auto-suggest
+                of stream type (RAS/WAS) when wiring sludge loops, dual ports
+                on every unit so RAS lines can re-enter on the BACK of a tank,
+                and an updated activated-sludge template that mirrors the
+                Mermaid reference (IN → AT → SC → SPLIT → {RAS→AT, WAS→WAS_OUT}).
+─────────────────────────────────────────────────────────────────────────── -->
+
+<style>
+:root {
+    --bg:        #f4f3ee;
+    --panel:     #ffffff;
+    --ink:       #1a2128;
+    --ink-soft:  #5a6470;
+    --rule:      #d8d4c8;
+    --accent:    #2e5e7e;
+    --accent-2:  #c8a04a;
+    --warn:      #b85c3a;
+    --ok:        #4a7a5e;
+    --bad:       #b85c3a;
+    --grid:      #e8e5db;
+
+    --c-influent:   #7a92a8;
+    --c-primary:    #a89368;
+    --c-biological: #5b8a72;
+    --c-separation: #8b6c8a;
+    --c-tertiary:   #6b8a8b;
+    --c-recycle:    #b3814e;
+    --c-sludge:     #6b5e4a;
+    --c-effluent:   #4a7a5e;
+    --c-other:      #707070;
+
+    --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    --body: 'IBM Plex Sans', 'Helvetica Neue', sans-serif;
+    --serif:'IBM Plex Serif', 'Georgia', serif;
+}
+
+*  { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+    font-family: var(--body);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 240px 1fr 300px;
+    grid-template-areas:
+        "header header header"
+        "palette canvas props"
+        "footer footer footer";
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────────────── */
+header {
+    grid-area: header;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+}
+.brand { display: flex; align-items: baseline; gap: 14px; }
+.brand h1 {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+.brand .version {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.meta-bar { display: flex; gap: 14px; align-items: center; }
+.meta-field { display: flex; flex-direction: column; gap: 2px; }
+.meta-field label {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent-2);
+}
+.meta-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ink-soft);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 2px 0;
+    width: 110px;
+}
+.meta-field input:focus { outline: none; border-bottom-color: var(--accent-2); }
+
+.actions { display: flex; gap: 6px; }
+button {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 7px 11px;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--bg);
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+button:hover { background: var(--accent-2); border-color: var(--accent-2); }
+button.primary { background: var(--accent-2); border-color: var(--accent-2); }
+button.primary:hover { background: var(--bg); }
+button.ghost { background: transparent; color: var(--bg); border-color: var(--ink-soft); }
+button.ghost:hover { background: var(--ink-soft); color: var(--bg); }
+
+/* ── MODE TOGGLE (segmented control) ────────────────────────────────────── */
+.mode-toggle {
+    display: inline-flex;
+    border: 1px solid var(--ink-soft);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.mode-toggle button {
+    padding: 7px 12px;
+    background: transparent;
+    color: var(--bg);
+    border: none;
+    border-right: 1px solid var(--ink-soft);
+    border-radius: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.2px;
+}
+.mode-toggle button:last-child { border-right: none; }
+.mode-toggle button:hover { background: var(--ink-soft); color: var(--bg); }
+.mode-toggle button.active {
+    background: var(--accent-2);
+    color: var(--ink);
+    font-weight: 600;
+}
+
+/* ── PALETTE ───────────────────────────────────────────────────────────── */
+aside.palette {
+    grid-area: palette;
+    background: var(--panel);
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 14px 0;
+}
+.cat { padding: 0 18px; margin-bottom: 14px; }
+.cat h3 {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--rule);
+}
+.unit-template {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    margin: 2px 0;
+    cursor: grab;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    user-select: none;
+    transition: background 0.1s;
+    font-size: 12px;
+}
+.unit-template:hover { background: var(--bg); border-color: var(--rule); }
+.unit-template:active { cursor: grabbing; }
+.unit-template.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.unit-template .swatch { width: 14px; height: 14px; flex-shrink: 0; }
+.unit-template .name { flex: 1; color: var(--ink); }
+.unit-template .kind {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.palette-note {
+    margin: 6px 18px 14px 18px;
+    padding: 10px;
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+
+/* ── CANVAS ────────────────────────────────────────────────────────────── */
+main.canvas {
+    grid-area: canvas;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+}
+#schematic-svg { width: 100%; height: 100%; cursor: default; }
+#schematic-svg.connecting { cursor: crosshair; }
+#schematic-svg.viewmode  { cursor: default; }
+
+/* canvas overlay banner showing current mode */
+.canvas-banner {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 6px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.canvas-banner.config { background: var(--accent); }
+.canvas-banner.connect { background: var(--accent-2); color: var(--ink); }
+.canvas-banner.view { background: var(--ink-soft); }
+
+/* mini stream-type legend, rendered when in connect mode */
+.stream-legend {
+    position: absolute;
+    bottom: 18px;
+    left: 16px;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid var(--rule);
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    z-index: 5;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.stream-legend .row { display: flex; align-items: center; gap: 6px; }
+.stream-legend .dash { display: inline-block; width: 22px; height: 2px; }
+
+.unit-node { cursor: move; }
+.unit-node.view { cursor: default; }
+.unit-node rect.body {
+    fill: var(--panel);
+    stroke-width: 1.5;
+    transition: stroke-width 0.1s;
+}
+.unit-node:hover rect.body { stroke-width: 2.5; }
+.unit-node.selected rect.body { stroke-width: 3; }
+.unit-node.connect-from rect.body {
+    stroke-width: 3;
+    stroke-dasharray: 4 3;
+    filter: drop-shadow(0 0 4px var(--accent-2));
+}
+.unit-node.connect-candidate rect.body {
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 3px var(--accent));
+}
+.unit-node text.title {
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--ink);
+    pointer-events: none;
+    text-anchor: middle;
+}
+.unit-node text.id-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    fill: var(--ink-soft);
+    pointer-events: none;
+    text-anchor: middle;
+    letter-spacing: 0.5px;
+}
+.unit-node .port {
+    fill: var(--ink-soft);
+    cursor: crosshair;
+    transition: r 0.1s, fill 0.1s;
+}
+.unit-node .port-loop {
+    fill: var(--c-recycle);
+    opacity: 0.55;
+}
+.unit-node:hover .port { fill: var(--accent-2); }
+.unit-node:hover .port-loop { fill: var(--c-recycle); opacity: 1; }
+
+.stream-line {
+    fill: none;
+    stroke-width: 1.8;
+    cursor: pointer;
+}
+.stream-line:hover { stroke-width: 3; }
+.stream-line.process_flow { stroke: var(--ink); }
+.stream-line.ras          { stroke: var(--c-recycle); stroke-dasharray: 6 3; }
+.stream-line.was          { stroke: var(--c-sludge);  stroke-dasharray: 2 2; }
+.stream-line.recycle      { stroke: var(--accent);    stroke-dasharray: 4 4; }
+.stream-line.reject       { stroke: var(--warn);      stroke-dasharray: 8 2 2 2; }
+.stream-line.selected     { stroke-width: 3; filter: drop-shadow(0 0 3px rgba(0,0,0,0.25)); }
+
+.stream-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    fill: var(--ink-soft);
+    pointer-events: none;
+    text-anchor: middle;
+}
+
+/* preview line while user is dragging-out a connection */
+.preview-line {
+    fill: none;
+    stroke: var(--accent-2);
+    stroke-width: 2;
+    stroke-dasharray: 4 4;
+    pointer-events: none;
+}
+
+/* ── PROPERTIES ────────────────────────────────────────────────────────── */
+aside.properties {
+    grid-area: props;
+    background: var(--panel);
+    border-left: 1px solid var(--rule);
+    overflow-y: auto;
+    padding: 16px 18px;
+}
+.props-header { margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.props-header h3 {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+.props-header .id-display {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 1px;
+}
+.props-empty {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 12px;
+    padding: 30px 0;
+    text-align: center;
+    line-height: 1.5;
+}
+.prop-row {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.prop-row label {
+    font-size: 11px;
+    color: var(--ink);
+    font-weight: 500;
+}
+.prop-row .unit {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-soft);
+    margin-top: 1px;
+}
+.prop-row input, .prop-row select {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 5px 7px;
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+}
+.prop-row input:focus, .prop-row select:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+.prop-section { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--rule); }
+.prop-section h4 {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+}
+.delete-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 8px;
+    background: var(--warn);
+    color: var(--bg);
+    border: none;
+    border-color: var(--warn);
+}
+.delete-btn:hover { background: var(--ink); border-color: var(--ink); }
+
+/* validation widget */
+.validation-box {
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-left: 3px solid var(--ok);
+    font-size: 11px;
+    line-height: 1.5;
+}
+.validation-box.has-warn { border-left-color: var(--accent-2); }
+.validation-box.has-err  { border-left-color: var(--bad); }
+.validation-box h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+}
+.validation-box ul { list-style: none; padding-left: 0; }
+.validation-box li { padding: 2px 0; color: var(--ink); }
+.validation-box li.err  { color: var(--bad); }
+.validation-box li.warn { color: var(--accent-2); }
+.validation-box li::before { content: "• "; color: var(--ink-soft); }
+
+/* ── FOOTER / STATUS ───────────────────────────────────────────────────── */
+footer {
+    grid-area: footer;
+    background: var(--panel);
+    border-top: 1px solid var(--rule);
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+}
+footer .stats { display: flex; gap: 20px; }
+footer .stats span strong { color: var(--ink); font-weight: 600; margin-left: 4px; }
+footer .hint { color: var(--ink-soft); }
+footer .hint kbd {
+    font-family: var(--mono);
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 9px;
+}
+
+/* ── MODAL ─────────────────────────────────────────────────────────────── */
+.modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(26, 33, 40, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.modal-bg.open { display: flex; }
+.modal {
+    background: var(--panel);
+    width: min(720px, 90vw);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--rule);
+}
+.modal-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 { font-family: var(--serif); font-size: 15px; font-weight: 500; }
+.modal-body { flex: 1; overflow: auto; padding: 16px 20px; }
+.modal-body textarea {
+    width: 100%;
+    height: 400px;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 12px;
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+    line-height: 1.5;
+}
+.modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+.modal-footer button { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.modal-footer button:hover { background: var(--accent-2); border-color: var(--accent-2); }
+
+/* small stream-type picker shown when finalising a new connection */
+.stream-picker {
+    position: absolute;
+    background: var(--panel);
+    border: 1px solid var(--ink);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    padding: 12px;
+    z-index: 50;
+    min-width: 220px;
+}
+.stream-picker h4 {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+}
+.stream-picker button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 4px;
+    padding: 6px 8px;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.stream-picker button:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.stream-picker button.suggested {
+    background: var(--accent-2);
+    color: var(--ink);
+    border-color: var(--ink);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px var(--ink);
+}
+.stream-picker button.suggested::before { content: "● "; color: var(--ink); }
+.stream-picker .hint {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ok);
+    margin: 4px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.stream-picker .label-input { width: 100%; margin-top: 6px; padding: 6px; font-family: var(--mono); font-size: 11px; border: 1px solid var(--rule); background: var(--bg); }
+.stream-picker .cancel { background: var(--ink); color: var(--bg); border-color: var(--ink); margin-top: 8px; }
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        <h1>WWTP Schematic Builder</h1>
+        <span class="version">SUMO24 / v1.1</span>
+    </div>
+    <div class="meta-bar">
+        <div class="meta-field">
+            <label>Plant</label>
+            <input type="text" id="meta-plant" value="Qaha WWTP">
+        </div>
+        <div class="meta-field">
+            <label>Design Q (m³/d)</label>
+            <input type="number" id="meta-flow" value="9820">
+        </div>
+        <div class="meta-field">
+            <label>Temperature (°C)</label>
+            <input type="number" id="meta-temp" value="22" step="0.5">
+        </div>
+    </div>
+    <div class="mode-toggle" id="mode-toggle">
+        <button data-mode="config"  onclick="setMode('config')"  class="active">Configuration</button>
+        <button data-mode="connect" onclick="setMode('connect')">Connection</button>
+        <button data-mode="view"    onclick="setMode('view')">View</button>
+    </div>
+    <div class="actions">
+        <button class="ghost" onclick="exportSchematic()">Export JSON</button>
+        <button class="ghost" onclick="importSchematic()">Import</button>
+        <button class="ghost" onclick="loadQahaTemplate()">Load Qaha Template</button>
+        <button class="ghost" onclick="loadClassicASTemplate()">Load Classic AS (Mermaid)</button>
+        <button class="ghost" onclick="clearAll()">Clear</button>
+        <button class="ghost" onclick="saveAsHTML()">Save HTML (for MCP)</button>
+        <button class="primary" onclick="generateCommands()">Generate SUMO Commands</button>
+    </div>
+</header>
+
+<!-- ── UNIT PALETTE ─────────────────────────────────────────────────────── -->
+<aside class="palette" id="palette"></aside>
+
+<!-- ── CANVAS ───────────────────────────────────────────────────────────── -->
+<main class="canvas">
+    <div class="canvas-banner config" id="canvas-banner">Configuration Mode — Drag units · Move · Edit</div>
+    <svg id="schematic-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--grid)" stroke-width="0.5"/>
+            </pattern>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink)"/>
+            </marker>
+            <marker id="arrow-ras" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--c-recycle)"/>
+            </marker>
+            <marker id="arrow-was" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--c-sludge)"/>
+            </marker>
+            <marker id="arrow-recycle" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+            </marker>
+            <marker id="arrow-reject" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--warn)"/>
+            </marker>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        <g id="streams-layer"></g>
+        <g id="units-layer"></g>
+        <path class="preview-line" id="preview-line" style="display:none"></path>
+    </svg>
+    <div class="stream-legend" id="stream-legend" style="display:none">
+        <div class="row"><span class="dash" style="background:var(--ink)"></span>process_flow</div>
+        <div class="row"><span class="dash" style="background:var(--c-recycle);background-image:repeating-linear-gradient(90deg,var(--c-recycle) 0 6px,transparent 6px 9px)"></span>ras (loop ↺)</div>
+        <div class="row"><span class="dash" style="background:var(--c-sludge);background-image:repeating-linear-gradient(90deg,var(--c-sludge) 0 2px,transparent 2px 4px)"></span>was (→ outlet)</div>
+        <div class="row"><span class="dash" style="background:var(--accent);background-image:repeating-linear-gradient(90deg,var(--accent) 0 4px,transparent 4px 8px)"></span>recycle (IR)</div>
+        <div class="row"><span class="dash" style="background:var(--warn);background-image:repeating-linear-gradient(90deg,var(--warn) 0 8px,transparent 8px 10px,var(--warn) 10px 12px,transparent 12px 14px)"></span>reject</div>
+        <div class="row" style="margin-top:6px;font-size:9px;color:var(--ok)">Picker auto-suggests RAS/WAS for sludge loops.</div>
+    </div>
+</main>
+
+<!-- ── PROPERTY PANEL ───────────────────────────────────────────────────── -->
+<aside class="properties" id="properties">
+    <div class="props-empty">Select a unit or stream to edit. Switch to <strong>Connection</strong> mode to wire units together. Loops are supported (RAS, internal recycle).</div>
+</aside>
+
+<!-- ── FOOTER STATUS ────────────────────────────────────────────────────── -->
+<footer>
+    <div class="stats">
+        <span>Units<strong id="stat-units">0</strong></span>
+        <span>Streams<strong id="stat-streams">0</strong></span>
+        <span>Validation<strong id="stat-valid">—</strong></span>
+        <span>Last edit<strong id="stat-time">—</strong></span>
+    </div>
+    <div class="hint">
+        <kbd>Del</kbd> remove · <kbd>Esc</kbd> deselect · <kbd>C</kbd> connect · <kbd>E</kbd> edit · <kbd>V</kbd> view
+    </div>
+</footer>
+
+<!-- ── MODAL ────────────────────────────────────────────────────────────── -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modal-title">Export</h3>
+            <button class="ghost" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="modal-textarea" spellcheck="false"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button onclick="copyModalContent()">Copy to Clipboard</button>
+            <button onclick="downloadModalContent()">Download File</button>
+            <button id="modal-apply-btn" onclick="applyModalContent()" style="display:none">Apply Import</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     MACHINE-READABLE STATE
+     The MCP server reads this script tag to reconstruct the schematic.
+     This block is regenerated on every edit (see persistState()).
+─────────────────────────────────────────────────────────────────────────── -->
+<script id="schematic-data" type="application/json">
+{
+  "schema_version": "1.0",
+  "generator": "wwtp-schematic-builder",
+  "meta": {
+    "plant_name": "Qaha WWTP",
+    "design_flow_m3d": 9820,
+    "temperature_C": 22,
+    "created": "",
+    "modified": ""
+  },
+  "units": [],
+  "streams": [],
+  "global_params": {}
+}
+</script>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+   UNIT-TYPE LIBRARY  ── must stay in sync with PY/unit_type_registry.py
+   Maps each schematic unit type to its SUMO24 equivalent and parameter set.
+───────────────────────────────────────────────────────────────────────── */
+const UNIT_TYPES = {
+    // ── Boundaries ────────────────────────────────────────────────
+    influent: {
+        category: 'boundary', label: 'Influent', kind: 'Boundary',
+        color: 'var(--c-influent)',
+        sumo_template: 'Sumo__Plant__Influent', sumo_unit_class: 'Influent',
+        parameters: {
+            Q:    { value: 9820, unit: 'm³/d',   sumo: 'param__Q',     desc: 'Influent flow' },
+            T:    { value: 22,   unit: '°C',     sumo: 'param__T',     desc: 'Temperature' },
+            XCOD: { value: 650,  unit: 'mg/L',   sumo: 'param__XCOD',  desc: 'Total COD' },
+            XTKN: { value: 50,   unit: 'mg N/L', sumo: 'param__XTKN',  desc: 'Total TKN' },
+            XTP:  { value: 8,    unit: 'mg P/L', sumo: 'param__XTP',   desc: 'Total P' },
+            XTSS: { value: 350,  unit: 'mg/L',   sumo: 'param__XTSS',  desc: 'Total TSS' }
+        }
+    },
+    effluent: {
+        category: 'boundary', label: 'Effluent', kind: 'Boundary',
+        color: 'var(--c-effluent)',
+        sumo_template: 'Sumo__Plant__Effluent', sumo_unit_class: 'Effluent',
+        parameters: {}
+    },
+    ras_flow: {
+        category: 'boundary', label: 'RAS Flow', kind: 'Boundary · Recycle',
+        color: 'var(--c-recycle)',
+        sumo_template: 'Sumo__Plant__RAS_Flow', sumo_unit_class: 'RecycleStream',
+        // RAS Flow is a "virtual boundary" — the source of a RAS recycle stream
+        // that loops sludge from clarifier/splitter back to the bioreactor.
+        // In SUMO the actual Pump element handles the hydraulics; this node
+        // is the schematic marker for the recycle endpoint.
+        parameters: {
+            Q:     { value: 7365, unit: 'm³/d', sumo: 'param__Q',     desc: 'RAS design flow' },
+            ratio: { value: 0.75, unit: '–',    sumo: 'param__ratio', desc: 'RAS ratio Q_RAS/Q_in' }
+        }
+    },
+    was_flow: {
+        category: 'boundary', label: 'WAS Flow', kind: 'Boundary · Waste',
+        color: 'var(--c-sludge)',
+        sumo_template: 'Sumo__Plant__WAS_Flow', sumo_unit_class: 'Effluent',
+        // WAS Flow is the sludge outlet — mermaid's "Waste / Sludge Processing"
+        // boundary. Waste activated sludge leaves the plant here.
+        parameters: {
+            Q:          { value: 350, unit: 'm³/d', sumo: 'param__Q',       desc: 'WAS design flow' },
+            target_SRT: { value: 12,  unit: 'd',    sumo: 'param__targSRT', desc: 'Target SRT' }
+        }
+    },
+
+    // ── Pre-treatment ─────────────────────────────────────────────
+    screen: {
+        category: 'pretreatment', label: 'Screen', kind: 'Pretreatment',
+        color: 'var(--c-other)',
+        sumo_template: 'Sumo__Plant__Screen', sumo_unit_class: 'PointSettler',
+        parameters: { removalTSS: { value: 0.05, unit: '–', sumo: 'param__rTSS', desc: 'TSS removal fraction' } }
+    },
+    grit_chamber: {
+        category: 'pretreatment', label: 'Grit Chamber', kind: 'Pretreatment',
+        color: '#7e8a8b',
+        sumo_template: 'Sumo__Plant__GritChamber', sumo_unit_class: 'PointSettler',
+        parameters: {
+            V:          { value: 50,   unit: 'm³', sumo: 'param__V',     desc: 'Chamber volume' },
+            depth:      { value: 2.0,  unit: 'm',  sumo: 'param__depth', desc: 'Side water depth' },
+            removalTSS: { value: 0.10, unit: '–',  sumo: 'param__rTSS',  desc: 'TSS (grit) removal fraction' }
+        }
+    },
+
+    // ── Primary ───────────────────────────────────────────────────
+    primary_clarifier: {
+        category: 'primary', label: 'Primary Clarifier', kind: 'Primary',
+        color: 'var(--c-primary)',
+        sumo_template: 'Sumo__Plant__Primary', sumo_unit_class: 'PrimaryClarifier',
+        parameters: {
+            A:           { value: 200,  unit: 'm²',  sumo: 'param__A',           desc: 'Surface area' },
+            depth:       { value: 3.5,  unit: 'm',   sumo: 'param__depth',       desc: 'Side water depth' },
+            Q_underflow: { value: 600,  unit: 'm³/d',sumo: 'param__Qu',          desc: 'Underflow rate' },
+            removalTSS:  { value: 0.55, unit: '–',   sumo: 'param__rTSS',        desc: 'TSS removal fraction' }
+        }
+    },
+
+    // ── Biological ────────────────────────────────────────────────
+    anaerobic_zone: {
+        category: 'biological', label: 'Anaerobic Zone', kind: 'Biological',
+        color: 'var(--c-biological)',
+        sumo_template: 'Sumo__Plant__Anaerobic', sumo_unit_class: 'CSTR',
+        parameters: {
+            V:     { value: 800, unit: 'm³',      sumo: 'param__V',     desc: 'Reactor volume' },
+            DOmax: { value: 0.1, unit: 'mg O₂/L', sumo: 'param__DOmax', desc: 'Max DO (no aeration)' }
+        }
+    },
+    anoxic_zone: {
+        category: 'biological', label: 'Anoxic Zone', kind: 'Biological',
+        color: 'var(--c-biological)',
+        sumo_template: 'Sumo__Plant__Anoxic', sumo_unit_class: 'CSTR',
+        parameters: {
+            V:     { value: 1200, unit: 'm³',      sumo: 'param__V',     desc: 'Reactor volume' },
+            DOmax: { value: 0.3,  unit: 'mg O₂/L', sumo: 'param__DOmax', desc: 'Max DO' }
+        }
+    },
+    aerobic_zone: {
+        category: 'biological', label: 'Aerobic Zone', kind: 'Biological',
+        color: 'var(--c-biological)',
+        sumo_template: 'Sumo__Plant__Aerobic', sumo_unit_class: 'CSTR',
+        parameters: {
+            V:           { value: 3000, unit: 'm³',      sumo: 'param__V',           desc: 'Reactor volume' },
+            DOsetpoint:  { value: 2.0,  unit: 'mg O₂/L', sumo: 'param__DOsetpoint',  desc: 'DO setpoint' },
+            KLa:         { value: 240,  unit: '1/d',     sumo: 'param__KLa',         desc: 'Oxygen transfer coeff' }
+        }
+    },
+    oxidation_ditch: {
+        category: 'biological', label: 'Oxidation Ditch', kind: 'Biological',
+        color: 'var(--c-biological)',
+        sumo_template: 'Sumo__Plant__OxDitch', sumo_unit_class: 'CSTR',
+        parameters: {
+            V:                  { value: 7480, unit: 'm³',      sumo: 'param__V',           desc: 'Total volume (two trains)' },
+            DOsetpoint:         { value: 1.8,  unit: 'mg O₂/L', sumo: 'param__DOsetpoint',  desc: 'DO setpoint (aerobic zone)' },
+            aerated_fraction:   { value: 0.5,  unit: '–',       sumo: 'param__faer',        desc: 'Aerated volume fraction' }
+        }
+    },
+    mbbr: {
+        category: 'biological', label: 'MBBR', kind: 'Biofilm',
+        color: 'var(--c-biological)',
+        sumo_template: 'Sumo__Plant__MBBR', sumo_unit_class: 'BiofilmCSTR',
+        parameters: {
+            V:          { value: 500, unit: 'm³',      sumo: 'param__V',          desc: 'Reactor volume' },
+            fill_ratio: { value: 0.4, unit: '–',       sumo: 'param__fcarrier',   desc: 'Carrier fill ratio' },
+            DOsetpoint: { value: 4.0, unit: 'mg O₂/L', sumo: 'param__DOsetpoint', desc: 'DO setpoint' }
+        }
+    },
+
+    // ── Separation ────────────────────────────────────────────────
+    secondary_clarifier: {
+        category: 'separation', label: 'Secondary Clarifier', kind: 'Separation',
+        color: 'var(--c-separation)',
+        sumo_template: 'Sumo__Plant__Final', sumo_unit_class: 'Settler1D',
+        parameters: {
+            A:     { value: 740, unit: 'm²',   sumo: 'param__A',     desc: 'Total surface area' },
+            depth: { value: 4.0, unit: 'm',    sumo: 'param__depth', desc: 'Side water depth' },
+            SVI:   { value: 148, unit: 'mL/g', sumo: 'param__SVI',   desc: 'Sludge Volume Index' },
+            v0:    { value: 250, unit: 'm/d',  sumo: 'param__v0',    desc: 'Vesilind v0' }
+        }
+    },
+    tertiary_filter: {
+        category: 'tertiary', label: 'Tertiary Filter', kind: 'Tertiary',
+        color: 'var(--c-tertiary)',
+        sumo_template: 'Sumo__Plant__TertFilter', sumo_unit_class: 'PointSettler',
+        parameters: {
+            removalTSS: { value: 0.85, unit: '–', sumo: 'param__rTSS', desc: 'TSS removal fraction' },
+            removalTP:  { value: 0.40, unit: '–', sumo: 'param__rTP',  desc: 'TP removal fraction' }
+        }
+    },
+    disinfection: {
+        category: 'tertiary', label: 'Disinfection', kind: 'Tertiary',
+        color: 'var(--c-tertiary)',
+        sumo_template: 'Sumo__Plant__Disinfect', sumo_unit_class: 'PointSettler',
+        parameters: { dose: { value: 5, unit: 'mg/L', sumo: 'param__dose', desc: 'Chemical dose' } }
+    },
+
+    // ── Recycle / Pumps ───────────────────────────────────────────
+    ras_pump: {
+        category: 'recycle', label: 'RAS Pump', kind: 'Recycle',
+        color: 'var(--c-recycle)',
+        sumo_template: 'Sumo__Plant__RAS_Pump', sumo_unit_class: 'Pump',
+        parameters: {
+            Q:     { value: 7365, unit: 'm³/d', sumo: 'param__Q',     desc: 'RAS flow rate (Q*0.75 default)' },
+            ratio: { value: 0.75, unit: '–',    sumo: 'param__ratio', desc: 'RAS ratio (Q_RAS / Q_in)' }
+        }
+    },
+    was_pump: {
+        category: 'recycle', label: 'WAS Pump', kind: 'Recycle',
+        color: 'var(--c-recycle)',
+        sumo_template: 'Sumo__Plant__WAS_Pump', sumo_unit_class: 'Pump',
+        parameters: {
+            Q:          { value: 350, unit: 'm³/d', sumo: 'param__Q',       desc: 'WAS flow rate' },
+            target_SRT: { value: 12,  unit: 'd',    sumo: 'param__targSRT', desc: 'Target Solids Retention Time' }
+        }
+    },
+    internal_recycle: {
+        category: 'recycle', label: 'Internal Recycle', kind: 'Recycle',
+        color: 'var(--c-recycle)',
+        sumo_template: 'Sumo__Plant__IR_Pump', sumo_unit_class: 'Pump',
+        parameters: {
+            Q:     { value: 30000, unit: 'm³/d', sumo: 'param__Q',     desc: 'NO₃ recycle flow' },
+            ratio: { value: 3.0,   unit: '–',    sumo: 'param__ratio', desc: 'Recycle ratio' }
+        }
+    },
+
+    // ── Sludge handling ───────────────────────────────────────────
+    thickener: {
+        category: 'sludge', label: 'Sludge Thickener', kind: 'Sludge',
+        color: 'var(--c-sludge)',
+        sumo_template: 'Sumo__Plant__Thickener', sumo_unit_class: 'Thickener',
+        parameters: {
+            A:           { value: 50,  unit: 'm²',  sumo: 'param__A',  desc: 'Surface area' },
+            Q_underflow: { value: 100, unit: 'm³/d',sumo: 'param__Qu', desc: 'Underflow rate' }
+        }
+    },
+    anaerobic_digester: {
+        category: 'sludge', label: 'Anaerobic Digester', kind: 'Sludge',
+        color: 'var(--c-sludge)',
+        sumo_template: 'Sumo__Plant__Digester', sumo_unit_class: 'Digester',
+        parameters: {
+            V:   { value: 1500, unit: 'm³', sumo: 'param__V',   desc: 'Digester volume' },
+            T:   { value: 35,   unit: '°C', sumo: 'param__T',   desc: 'Operating temperature' },
+            HRT: { value: 20,   unit: 'd',  sumo: 'param__HRT', desc: 'Hydraulic retention time' }
+        }
+    },
+    dewatering: {
+        category: 'sludge', label: 'Dewatering', kind: 'Sludge',
+        color: 'var(--c-sludge)',
+        sumo_template: 'Sumo__Plant__Dewater', sumo_unit_class: 'PointSettler',
+        parameters: { cake_TS: { value: 0.22, unit: '–', sumo: 'param__cakeTS', desc: 'Cake dryness fraction' } }
+    },
+
+    // ── Other ─────────────────────────────────────────────────────
+    splitter: {
+        category: 'other', label: 'Flow Splitter', kind: 'Flow',
+        color: 'var(--c-other)',
+        sumo_template: 'Sumo__Plant__Splitter', sumo_unit_class: 'Splitter',
+        parameters: { fraction: { value: 0.5, unit: '–', sumo: 'param__f', desc: 'Split fraction (to first outlet)' } }
+    },
+    sludge_splitter: {
+        category: 'separation', label: 'Sludge Splitter', kind: 'Separation',
+        color: 'var(--c-separation)',
+        sumo_template: 'Sumo__Plant__SludgeSplit', sumo_unit_class: 'SludgeSplitter',
+        // Mirrors the SPLIT node in the mermaid reference:
+        //   SC --underflow--> SPLIT --RAS--> AT
+        //                           --WAS--> WAS_OUT
+        // Splits clarifier underflow into RAS (recycle) and WAS (waste).
+        parameters: {
+            ras_fraction: { value: 0.95, unit: '–',    sumo: 'param__fRAS',     desc: 'Fraction underflow → RAS' },
+            Q_RAS:        { value: 7365, unit: 'm³/d', sumo: 'param__QRAS',     desc: 'RAS flow setpoint' },
+            Q_WAS:        { value: 350,  unit: 'm³/d', sumo: 'param__QWAS',     desc: 'WAS flow setpoint' }
+        }
+    },
+    combiner: {
+        category: 'other', label: 'Flow Combiner', kind: 'Flow',
+        color: 'var(--c-other)',
+        sumo_template: 'Sumo__Plant__Combiner', sumo_unit_class: 'Combiner',
+        parameters: {}
+    }
+};
+
+const STREAM_TYPES = ['process_flow', 'ras', 'was', 'recycle', 'reject'];
+
+/* ─────────────────────────────────────────────────────────────────────────
+   APP STATE
+───────────────────────────────────────────────────────────────────────── */
+let state = {
+    units: [],
+    streams: [],
+    selectedUnitId: null,
+    selectedStreamId: null,
+    nextUnitNum: 1,
+    nextStreamNum: 1,
+    mode: 'config',          // 'config' | 'connect' | 'view'
+    connectFrom: null,
+    pendingTo: null,
+    dragging: null,
+    created: null,
+    mousePos: { x: 0, y: 0 }
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PALETTE
+───────────────────────────────────────────────────────────────────────── */
+function renderPalette() {
+    const cats = {
+        boundary: 'Boundaries', pretreatment: 'Pre-treatment', primary: 'Primary',
+        biological: 'Biological', separation: 'Separation', tertiary: 'Tertiary',
+        recycle: 'Recycle & Pumps', sludge: 'Sludge Handling', other: 'Flow Logic'
+    };
+    const palette = document.getElementById('palette');
+    palette.innerHTML = '';
+    const note = document.createElement('div');
+    note.className = 'palette-note';
+    note.innerHTML = 'Drag a unit onto the canvas (Configuration mode). Switch to <strong>Connection</strong> mode to wire units. <strong>RAS Flow</strong> &amp; <strong>WAS Flow</strong> are boundary components (like Influent / Effluent) — drop one for each sludge stream and the connection picker will pre-select the right stream type.';
+    palette.appendChild(note);
+    Object.entries(cats).forEach(([catKey, catLabel]) => {
+        const items = Object.entries(UNIT_TYPES).filter(([, def]) => def.category === catKey);
+        if (!items.length) return;
+        const section = document.createElement('div');
+        section.className = 'cat';
+        section.innerHTML = `<h3>${catLabel}</h3>`;
+        items.forEach(([typeKey, def]) => {
+            const item = document.createElement('div');
+            item.className = 'unit-template';
+            item.draggable = state.mode === 'config';
+            item.dataset.type = typeKey;
+            item.innerHTML = `
+                <div class="swatch" style="background:${def.color}"></div>
+                <div class="name">${def.label}</div>
+                <div class="kind">${def.kind}</div>
+            `;
+            item.addEventListener('dragstart', e => { e.dataTransfer.setData('unit-type', typeKey); });
+            section.appendChild(item);
+        });
+        palette.appendChild(section);
+    });
+    updatePaletteEnabled();
+}
+function updatePaletteEnabled() {
+    document.querySelectorAll('.unit-template').forEach(el => {
+        if (state.mode === 'config') el.classList.remove('disabled');
+        else el.classList.add('disabled');
+        el.draggable = state.mode === 'config';
+    });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CANVAS
+───────────────────────────────────────────────────────────────────────── */
+const svg = document.getElementById('schematic-svg');
+const unitsLayer = document.getElementById('units-layer');
+const streamsLayer = document.getElementById('streams-layer');
+const previewLine = document.getElementById('preview-line');
+
+function renderCanvas() {
+    unitsLayer.innerHTML = '';
+    streamsLayer.innerHTML = '';
+    state.streams.forEach(s => renderStream(s));
+    state.units.forEach(u => renderUnit(u));
+    document.getElementById('stat-units').textContent = state.units.length;
+    document.getElementById('stat-streams').textContent = state.streams.length;
+    refreshValidation();
+}
+
+function renderUnit(unit) {
+    const def = UNIT_TYPES[unit.type];
+    const W = 110, H = 56;
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    let classes = ['unit-node'];
+    if (state.selectedUnitId === unit.id) classes.push('selected');
+    if (state.connectFrom === unit.id) classes.push('connect-from');
+    if (state.mode === 'connect' && state.connectFrom && state.connectFrom !== unit.id) classes.push('connect-candidate');
+    if (state.mode === 'view') classes.push('view');
+    g.setAttribute('class', classes.join(' '));
+    g.setAttribute('transform', `translate(${unit.x}, ${unit.y})`);
+    g.dataset.unitId = unit.id;
+
+    g.innerHTML = `
+        <rect class="body" x="0" y="0" width="${W}" height="${H}"
+              fill="${def.color}" fill-opacity="0.12" stroke="${def.color}"/>
+        <text class="title" x="${W/2}" y="${H/2 - 2}">${escapeHtml(unit.name)}</text>
+        <text class="id-label" x="${W/2}" y="${H/2 + 12}">${unit.id} · ${def.kind.toUpperCase()}</text>
+        <!-- left/right ports for forward flow -->
+        <circle class="port" cx="0"     cy="${H/2}" r="4"/>
+        <circle class="port" cx="${W}"  cy="${H/2}" r="4"/>
+        <!-- top/bottom ports for recycle/sludge loops (RAS/WAS) -->
+        <circle class="port port-loop" cx="${W/2}" cy="0"   r="3"/>
+        <circle class="port port-loop" cx="${W/2}" cy="${H}" r="3"/>
+    `;
+
+    g.addEventListener('mousedown', e => {
+        if (state.mode === 'connect') {
+            handleConnectClick(unit.id, e);
+            e.stopPropagation();
+            return;
+        }
+        if (state.mode === 'view') { e.stopPropagation(); return; }
+        const pt = svgPoint(e);
+        state.dragging = { unitId: unit.id, offsetX: pt.x - unit.x, offsetY: pt.y - unit.y };
+        selectUnit(unit.id);
+        e.stopPropagation();
+    });
+
+    unitsLayer.appendChild(g);
+}
+
+function renderStream(stream) {
+    const fromUnit = state.units.find(u => u.id === stream.from);
+    const toUnit   = state.units.find(u => u.id === stream.to);
+    if (!fromUnit || !toUnit) return;
+    const W = 110, H = 56;
+    // Endpoint selection: RAS lines go from the BOTTOM of the source unit
+    // and re-enter the TOP of the target unit so the loop is visually obvious.
+    // WAS / reject leave from the bottom of the source.
+    let x1, y1, x2, y2;
+    const sLoopy = (stream.type === 'ras' || stream.type === 'recycle');
+    const sWaste = (stream.type === 'was' || stream.type === 'reject');
+    if (sLoopy) {
+        x1 = fromUnit.x + W/2; y1 = fromUnit.y + H;       // bottom-center of source
+        x2 = toUnit.x   + W/2; y2 = toUnit.y;             // top-center of target
+    } else if (sWaste) {
+        x1 = fromUnit.x + W/2; y1 = fromUnit.y + H;       // bottom-center of source
+        x2 = toUnit.x;         y2 = toUnit.y + H/2;       // left of target
+    } else {
+        x1 = fromUnit.x + W;   y1 = fromUnit.y + H/2;     // right side of source
+        x2 = toUnit.x;         y2 = toUnit.y + H/2;       // left side of target
+    }
+    let path;
+    if (stream.from === stream.to) {
+        // self-loop arc above the unit
+        const r = 40;
+        const bx = fromUnit.x + W, by = fromUnit.y + H/2;
+        path = `M ${bx} ${by - 5} C ${bx + r} ${by - r}, ${fromUnit.x - r} ${by - r}, ${fromUnit.x + 5} ${by - 5}`;
+    } else if (sLoopy) {
+        // big arc down-and-around so RAS lines do not collide with forward flow
+        const dropY = Math.max(y1, y2) + 90;
+        path = `M ${x1} ${y1} C ${x1} ${dropY}, ${x2} ${dropY}, ${x2} ${y2}`;
+    } else {
+        const dx = (x2 - x1) * 0.5;
+        path = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    }
+    const markerId = ({ ras:'arrow-ras', was:'arrow-was', recycle:'arrow-recycle', reject:'arrow-reject' })[stream.type] || 'arrow';
+
+    // Label placement — for RAS/recycle loops drop the label below the arc,
+    // for WAS keep it near the source bottom.
+    let labelX = (x1 + x2) / 2;
+    let labelY = (y1 + y2) / 2 - 6;
+    if (sLoopy) { labelY = Math.max(y1, y2) + 78; }
+    else if (sWaste) { labelY = Math.max(y1, y2) + 14; }
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.dataset.streamId = stream.id;
+    g.innerHTML = `
+        <path class="stream-line ${stream.type} ${state.selectedStreamId === stream.id ? 'selected' : ''}"
+              d="${path}" marker-end="url(#${markerId})"/>
+        ${stream.label ? `<text class="stream-label" x="${labelX}" y="${labelY}">${escapeHtml(stream.label)}</text>` : ''}
+    `;
+    g.querySelector('path').addEventListener('click', e => {
+        if (state.mode === 'view') return;
+        state.selectedStreamId = stream.id;
+        state.selectedUnitId = null;
+        renderCanvas();
+        renderPropertyPanel();
+        e.stopPropagation();
+    });
+    g.querySelector('path').addEventListener('dblclick', () => {
+        if (state.mode === 'view') return;
+        if (confirm(`Delete stream ${stream.id}?`)) {
+            state.streams = state.streams.filter(s => s.id !== stream.id);
+            persistState();
+            renderCanvas();
+        }
+    });
+    streamsLayer.appendChild(g);
+}
+
+function svgPoint(evt) {
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DRAG-DROP FROM PALETTE  (config mode only)
+───────────────────────────────────────────────────────────────────────── */
+svg.addEventListener('dragover', e => { if (state.mode === 'config') e.preventDefault(); });
+svg.addEventListener('drop', e => {
+    if (state.mode !== 'config') return;
+    e.preventDefault();
+    const type = e.dataTransfer.getData('unit-type');
+    if (!type) return;
+    const pt = svgPoint(e);
+    addUnit(type, pt.x - 55, pt.y - 28);
+});
+
+/* Mouse move / up for dragging + connection preview */
+svg.addEventListener('mousemove', e => {
+    const pt = svgPoint(e);
+    state.mousePos = { x: pt.x, y: pt.y };
+    if (state.dragging && state.mode === 'config') {
+        const u = state.units.find(u => u.id === state.dragging.unitId);
+        if (u) {
+            u.x = Math.round((pt.x - state.dragging.offsetX) / 10) * 10;
+            u.y = Math.round((pt.y - state.dragging.offsetY) / 10) * 10;
+            renderCanvas();
+        }
+    } else if (state.mode === 'connect' && state.connectFrom) {
+        const from = state.units.find(u => u.id === state.connectFrom);
+        if (from) {
+            const W = 110, H = 56;
+            previewLine.setAttribute('d', `M ${from.x + W} ${from.y + H/2} L ${pt.x} ${pt.y}`);
+            previewLine.style.display = 'block';
+        }
+    }
+});
+svg.addEventListener('mouseup', () => {
+    if (state.dragging) { state.dragging = null; persistState(); }
+});
+svg.addEventListener('click', () => {
+    if (state.mode === 'config') {
+        state.selectedUnitId = null;
+        state.selectedStreamId = null;
+        renderCanvas();
+        renderPropertyPanel();
+    }
+});
+
+/* ─────────────────────────────────────────────────────────────────────────
+   UNIT / STREAM OPERATIONS
+───────────────────────────────────────────────────────────────────────── */
+function addUnit(type, x, y) {
+    const def = UNIT_TYPES[type];
+    if (!def) return;
+    const id = `U${state.nextUnitNum++}`;
+    const params = {};
+    Object.entries(def.parameters).forEach(([k, p]) => { params[k] = p.value; });
+    state.units.push({ id, type, name: def.label, x: Math.round(x/10)*10, y: Math.round(y/10)*10, parameters: params });
+    persistState();
+    renderCanvas();
+    selectUnit(id);
+}
+
+function deleteUnit(unitId) {
+    state.units = state.units.filter(u => u.id !== unitId);
+    state.streams = state.streams.filter(s => s.from !== unitId && s.to !== unitId);
+    state.selectedUnitId = null;
+    persistState();
+    renderCanvas();
+    renderPropertyPanel();
+}
+
+function selectUnit(unitId) {
+    state.selectedUnitId = unitId;
+    state.selectedStreamId = null;
+    renderCanvas();
+    renderPropertyPanel();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MODE MANAGEMENT
+───────────────────────────────────────────────────────────────────────── */
+function setMode(mode) {
+    state.mode = mode;
+    state.connectFrom = null;
+    state.pendingTo = null;
+    state.dragging = null;
+    previewLine.style.display = 'none';
+    closeStreamPicker();
+    document.querySelectorAll('#mode-toggle button').forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    svg.classList.toggle('connecting', mode === 'connect');
+    svg.classList.toggle('viewmode', mode === 'view');
+    const banner = document.getElementById('canvas-banner');
+    banner.className = 'canvas-banner ' + mode;
+    if (mode === 'config') banner.textContent = 'Configuration Mode — Drag units · Move · Edit';
+    if (mode === 'connect') banner.textContent = 'Connection Mode — Click source unit, then target. Loops allowed.';
+    if (mode === 'view') banner.textContent = 'View Mode — Read-only';
+    document.getElementById('stream-legend').style.display = mode === 'connect' ? 'block' : 'none';
+    updatePaletteEnabled();
+    renderCanvas();
+    renderPropertyPanel();
+}
+
+function handleConnectClick(unitId, evt) {
+    if (!state.connectFrom) {
+        state.connectFrom = unitId;
+        renderCanvas();
+        document.getElementById('canvas-banner').textContent = `Connection Mode — From ${unitId}, click target unit (or click the same to loop)`;
+    } else {
+        // allow same-target connections for genuine self-loops (advanced)
+        state.pendingTo = unitId;
+        previewLine.style.display = 'none';
+        openStreamPicker(evt);
+    }
+}
+
+/* Suggest a stream type given the source and target unit objects.
+   Used by the picker to pre-highlight the most plausible stream type. */
+function suggestStreamType(fromUnit, toUnit) {
+    if (!fromUnit || !toUnit) return { type: 'process_flow', why: '' };
+    const fT = fromUnit.type, tT = toUnit.type;
+    // 1. anything pointing at the RAS-flow boundary → RAS
+    if (tT === 'ras_flow')  return { type: 'ras', why: 'target is RAS-Flow boundary' };
+    // 2. anything pointing at the WAS-flow boundary → WAS
+    if (tT === 'was_flow')  return { type: 'was', why: 'target is WAS-Flow boundary' };
+    // 3. sludge_splitter → bioreactor = RAS  (mermaid SPLIT → AT)
+    const reactorTypes = ['aerobic_zone','anoxic_zone','anaerobic_zone','oxidation_ditch','mbbr','mbr'];
+    if (fT === 'sludge_splitter' && reactorTypes.includes(tT))
+        return { type: 'ras', why: 'splitter → reactor (return activated sludge)' };
+    // 4. ras_pump → bioreactor = RAS
+    if (fT === 'ras_pump' && reactorTypes.includes(tT))
+        return { type: 'ras', why: 'RAS pump → reactor' };
+    // 5. clarifier underflow → splitter or pump → still process_flow (the sludge line is process_flow until split)
+    // 6. internal_recycle pump → anoxic = recycle
+    if (fT === 'internal_recycle' && tT === 'anoxic_zone')
+        return { type: 'recycle', why: 'IR pump → anoxic (NO₃ recycle)' };
+    // 7. aerobic → anoxic (upstream) = recycle  (mixed-liquor recycle)
+    if (fT === 'aerobic_zone' && tT === 'anoxic_zone')
+        return { type: 'recycle', why: 'aerobic → anoxic (NO₃ recycle)' };
+    // 8. was_pump → ANY = WAS
+    if (fT === 'was_pump') return { type: 'was', why: 'WAS pump source' };
+    // 9. digester reject lines, dewatering reject
+    if (fT === 'dewatering' || fT === 'anaerobic_digester')
+        return { type: 'reject', why: 'sludge-side reject stream' };
+    // 10. default
+    return { type: 'process_flow', why: '' };
+}
+
+/* Stream-type picker (small floating panel) */
+function openStreamPicker(evt) {
+    closeStreamPicker();
+    const fromU = state.units.find(u => u.id === state.connectFrom);
+    const toU   = state.units.find(u => u.id === state.pendingTo);
+    const sug   = suggestStreamType(fromU, toU);
+
+    const picker = document.createElement('div');
+    picker.className = 'stream-picker';
+    picker.id = 'stream-picker';
+    const x = Math.min(evt.clientX, window.innerWidth - 250);
+    const y = Math.min(evt.clientY, window.innerHeight - 320);
+    picker.style.left = x + 'px';
+    picker.style.top  = y + 'px';
+
+    // pre-fill label for known recycle/waste loops
+    const defaultLabel = (sug.type === 'ras') ? 'RAS'
+                       : (sug.type === 'was') ? 'WAS'
+                       : (sug.type === 'recycle') ? 'IR'
+                       : '';
+
+    picker.innerHTML = `
+        <h4>Stream type: ${state.connectFrom} → ${state.pendingTo}</h4>
+        ${sug.why ? `<div class="hint">Suggested: ${sug.type} &nbsp;·&nbsp; ${sug.why}</div>` : ''}
+        ${STREAM_TYPES.map(t => `
+            <button class="${t === sug.type ? 'suggested' : ''}"
+                    onclick="finaliseStream('${t}')">${t}${t === sug.type ? '   ← suggested' : ''}</button>
+        `).join('')}
+        <input class="label-input" id="picker-label" placeholder="optional label (e.g. RAS, IR)" value="${defaultLabel}">
+        <button class="cancel" onclick="cancelConnect()">Cancel</button>
+    `;
+    document.body.appendChild(picker);
+    setTimeout(() => {
+        const lbl = document.getElementById('picker-label');
+        lbl?.focus();
+        lbl?.select();
+        // Enter accepts suggested stream type
+        lbl?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); finaliseStream(sug.type); }
+            if (e.key === 'Escape') { e.preventDefault(); cancelConnect(); }
+        });
+    }, 30);
+}
+function closeStreamPicker() { document.getElementById('stream-picker')?.remove(); }
+function cancelConnect() {
+    closeStreamPicker();
+    state.pendingTo = null;
+    state.connectFrom = null;
+    previewLine.style.display = 'none';
+    renderCanvas();
+    document.getElementById('canvas-banner').textContent = 'Connection Mode — Click source unit, then target. Loops allowed.';
+}
+function finaliseStream(type) {
+    if (!STREAM_TYPES.includes(type)) return;
+    const label = document.getElementById('picker-label')?.value || '';
+    state.streams.push({
+        id: `S${state.nextStreamNum++}`,
+        type,
+        from: state.connectFrom,
+        to: state.pendingTo,
+        label
+    });
+    closeStreamPicker();
+    state.connectFrom = null;
+    state.pendingTo = null;
+    persistState();
+    renderCanvas();
+    document.getElementById('canvas-banner').textContent = 'Connection Mode — Click source unit, then target. Loops allowed.';
+}
+
+/* keyboard shortcuts */
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (state.selectedUnitId) deleteUnit(state.selectedUnitId);
+        else if (state.selectedStreamId) {
+            state.streams = state.streams.filter(s => s.id !== state.selectedStreamId);
+            state.selectedStreamId = null;
+            persistState(); renderCanvas(); renderPropertyPanel();
+        }
+    } else if (e.key === 'Escape') {
+        cancelConnect();
+        state.selectedUnitId = null;
+        state.selectedStreamId = null;
+        renderCanvas();
+        renderPropertyPanel();
+    } else if (e.key === 'c' || e.key === 'C') setMode('connect');
+      else if (e.key === 'e' || e.key === 'E') setMode('config');
+      else if (e.key === 'v' || e.key === 'V') setMode('view');
+});
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PROPERTY PANEL
+───────────────────────────────────────────────────────────────────────── */
+function renderPropertyPanel() {
+    const panel = document.getElementById('properties');
+    if (state.selectedStreamId) { renderStreamProps(panel); return; }
+    if (!state.selectedUnitId)  {
+        panel.innerHTML = `
+            <div class="props-empty">
+                Select a unit or stream to edit.<br><br>
+                Current mode: <strong>${state.mode.toUpperCase()}</strong>.<br><br>
+                Switch to <strong>Connection</strong> mode to wire units together.<br>
+                Loops are supported (RAS, internal recycle).
+            </div>`;
+        return;
+    }
+    const unit = state.units.find(u => u.id === state.selectedUnitId);
+    if (!unit) return;
+    const def = UNIT_TYPES[unit.type];
+    let html = `
+        <div class="props-header">
+            <h3>${def.label}</h3>
+            <div class="id-display">${unit.id} · ${def.sumo_template}</div>
+        </div>
+        <div class="prop-row">
+            <label>Instance name</label>
+            <input type="text" value="${escapeHtml(unit.name)}" oninput="updateUnitName('${unit.id}', this.value)">
+        </div>
+    `;
+    if (Object.keys(def.parameters).length > 0) {
+        html += `<div class="prop-section"><h4>Process Parameters</h4>`;
+        Object.entries(def.parameters).forEach(([key, paramDef]) => {
+            const val = unit.parameters[key];
+            html += `
+                <div class="prop-row">
+                    <label>${paramDef.desc}<span class="unit">${key} (${paramDef.unit})</span></label>
+                    <input type="number" step="any" value="${val}"
+                           oninput="updateUnitParam('${unit.id}', '${key}', this.value)">
+                </div>`;
+        });
+        html += `</div>`;
+    }
+    html += `<button class="delete-btn" onclick="if(confirm('Delete unit ${unit.id}?')) deleteUnit('${unit.id}')">Delete Unit</button>`;
+    panel.innerHTML = html;
+}
+
+function renderStreamProps(panel) {
+    const stream = state.streams.find(s => s.id === state.selectedStreamId);
+    if (!stream) return;
+    panel.innerHTML = `
+        <div class="props-header">
+            <h3>Stream</h3>
+            <div class="id-display">${stream.id} · ${stream.from} → ${stream.to}</div>
+        </div>
+        <div class="prop-row">
+            <label>Type</label>
+            <select onchange="updateStreamType('${stream.id}', this.value)">
+                ${STREAM_TYPES.map(t => `<option value="${t}" ${stream.type===t?'selected':''}>${t}</option>`).join('')}
+            </select>
+        </div>
+        <div class="prop-row">
+            <label>Label</label>
+            <input type="text" value="${escapeHtml(stream.label||'')}" oninput="updateStreamLabel('${stream.id}', this.value)">
+        </div>
+        <button class="delete-btn" onclick="if(confirm('Delete stream ${stream.id}?')) deleteStream('${stream.id}')">Delete Stream</button>
+    `;
+}
+
+function updateUnitName(id, val)  { const u = state.units.find(u=>u.id===id); if (u){u.name=val; persistState(); renderCanvas();} }
+function updateUnitParam(id, k, v){ const u = state.units.find(u=>u.id===id); if (u){u.parameters[k]=parseFloat(v); persistState();} }
+function updateStreamType(id, v)  { const s = state.streams.find(s=>s.id===id); if (s){s.type=v; persistState(); renderCanvas();} }
+function updateStreamLabel(id, v) { const s = state.streams.find(s=>s.id===id); if (s){s.label=v; persistState(); renderCanvas();} }
+function deleteStream(id)         { state.streams = state.streams.filter(s=>s.id!==id); state.selectedStreamId=null; persistState(); renderCanvas(); renderPropertyPanel(); }
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   VALIDATION (live, mirrored on MCP server)
+───────────────────────────────────────────────────────────────────────── */
+const BOUNDARY_TYPES = ['influent', 'effluent', 'ras_flow', 'was_flow'];
+
+function validate() {
+    const errs = [], warns = [];
+    const ids = new Set(state.units.map(u => u.id));
+    const inf  = state.units.filter(u => u.type === 'influent');
+    const eff  = state.units.filter(u => u.type === 'effluent');
+    const rasB = state.units.filter(u => u.type === 'ras_flow');
+    const wasB = state.units.filter(u => u.type === 'was_flow');
+    if (inf.length === 0) errs.push("No Influent unit");
+    if (inf.length  >  1) warns.push("More than one Influent");
+    if (eff.length === 0) warns.push("No Effluent unit");
+    if (rasB.length === 0 && state.units.some(u => u.type === 'sludge_splitter'))
+        warns.push("Sludge Splitter present but no RAS Flow boundary — RAS line is unterminated");
+    if (wasB.length === 0 && state.units.some(u => u.type === 'sludge_splitter'))
+        warns.push("Sludge Splitter present but no WAS Flow boundary — WAS line is unterminated");
+    state.streams.forEach(s => {
+        if (!ids.has(s.from)) errs.push(`Stream ${s.id}: source ${s.from} missing`);
+        if (!ids.has(s.to))   errs.push(`Stream ${s.id}: target ${s.to} missing`);
+    });
+    // dangling unit check (skip boundaries)
+    state.units.forEach(u => {
+        if (BOUNDARY_TYPES.includes(u.type)) return;
+        const has_in  = state.streams.some(s => s.to   === u.id);
+        const has_out = state.streams.some(s => s.from === u.id);
+        if (!has_in)  warns.push(`${u.id} (${u.name}) has no incoming stream`);
+        if (!has_out) warns.push(`${u.id} (${u.name}) has no outgoing stream`);
+    });
+    // RAS boundary should only receive RAS-type streams (informational)
+    state.streams.forEach(s => {
+        const toUnit = state.units.find(u => u.id === s.to);
+        if (toUnit && toUnit.type === 'ras_flow' && s.type !== 'ras')
+            warns.push(`Stream ${s.id} → ${toUnit.id} (RAS Flow) but type is "${s.type}" (expected "ras")`);
+        if (toUnit && toUnit.type === 'was_flow' && s.type !== 'was')
+            warns.push(`Stream ${s.id} → ${toUnit.id} (WAS Flow) but type is "${s.type}" (expected "was")`);
+    });
+    return { errors: errs, warnings: warns };
+}
+function refreshValidation() {
+    const v = validate();
+    const stat = document.getElementById('stat-valid');
+    if (v.errors.length) { stat.textContent = `${v.errors.length} err`; stat.style.color = 'var(--bad)'; }
+    else if (v.warnings.length) { stat.textContent = `${v.warnings.length} warn`; stat.style.color = 'var(--accent-2)'; }
+    else { stat.textContent = 'OK'; stat.style.color = 'var(--ok)'; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PERSIST STATE TO EMBEDDED JSON
+───────────────────────────────────────────────────────────────────────── */
+function buildStateJSON() {
+    return {
+        schema_version: "1.0",
+        generator: "wwtp-schematic-builder",
+        meta: {
+            plant_name:      document.getElementById('meta-plant').value,
+            design_flow_m3d: parseFloat(document.getElementById('meta-flow').value),
+            temperature_C:   parseFloat(document.getElementById('meta-temp').value),
+            created:         state.created || new Date().toISOString(),
+            modified:        new Date().toISOString()
+        },
+        units: state.units.map(u => ({
+            id: u.id,
+            type: u.type,
+            name: u.name,
+            position: { x: u.x, y: u.y },
+            sumo_template: UNIT_TYPES[u.type].sumo_template,
+            sumo_unit_class: UNIT_TYPES[u.type].sumo_unit_class,
+            parameters: Object.entries(u.parameters).map(([k, v]) => {
+                const def = UNIT_TYPES[u.type].parameters[k];
+                return {
+                    key: k,
+                    value: v,
+                    unit: def ? def.unit : '',
+                    sumo_variable: def ? `${UNIT_TYPES[u.type].sumo_template}__${def.sumo}` : null,
+                    description: def ? def.desc : ''
+                };
+            })
+        })),
+        streams: state.streams.map(s => ({ id: s.id, type: s.type, from: s.from, to: s.to, label: s.label })),
+        global_params: {}
+    };
+}
+
+function persistState() {
+    const data = buildStateJSON();
+    if (!state.created) state.created = data.meta.created;
+    document.getElementById('schematic-data').textContent = JSON.stringify(data, null, 2);
+    document.getElementById('stat-time').textContent = new Date().toLocaleTimeString();
+    refreshValidation();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   EXPORT / IMPORT
+───────────────────────────────────────────────────────────────────────── */
+function exportSchematic() {
+    persistState();
+    openModal('Export Schematic JSON', document.getElementById('schematic-data').textContent, false);
+}
+function importSchematic() { openModal('Import Schematic JSON (paste below, then Apply)', '', true); }
+
+function applyModalContent() {
+    try {
+        const data = JSON.parse(document.getElementById('modal-textarea').value);
+        loadFromJSON(data);
+        closeModal();
+    } catch (e) { alert('Invalid JSON: ' + e.message); }
+}
+
+function loadFromJSON(data) {
+    if (data.meta) {
+        document.getElementById('meta-plant').value = data.meta.plant_name || '';
+        document.getElementById('meta-flow').value  = data.meta.design_flow_m3d || 0;
+        document.getElementById('meta-temp').value  = data.meta.temperature_C || 20;
+    }
+    state.units = (data.units || []).map(u => ({
+        id: u.id,
+        type: u.type,
+        name: u.name,
+        x: (u.position?.x) ?? u.x ?? 0,
+        y: (u.position?.y) ?? u.y ?? 0,
+        parameters: Array.isArray(u.parameters)
+            ? Object.fromEntries(u.parameters.map(p => [p.key, p.value]))
+            : (u.parameters || {})
+    }));
+    state.streams = (data.streams || []).map(s => ({ id: s.id, type: s.type, from: s.from, to: s.to, label: s.label || '' }));
+    const maxU = state.units.reduce((m, u) => Math.max(m, parseInt(String(u.id).replace(/\D/g, '')) || 0), 0);
+    const maxS = state.streams.reduce((m, s) => Math.max(m, parseInt(String(s.id).replace(/\D/g, '')) || 0), 0);
+    state.nextUnitNum = maxU + 1;
+    state.nextStreamNum = maxS + 1;
+    state.created = data.meta?.created || new Date().toISOString();
+    persistState();
+    renderCanvas();
+    renderPropertyPanel();
+}
+
+function clearAll() {
+    if (!confirm('Clear the entire schematic?')) return;
+    state.units = [];
+    state.streams = [];
+    state.selectedUnitId = null;
+    state.selectedStreamId = null;
+    state.nextUnitNum = 1;
+    state.nextStreamNum = 1;
+    persistState();
+    renderCanvas();
+    renderPropertyPanel();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GENERATE SUMO COMMANDS
+───────────────────────────────────────────────────────────────────────── */
+function generateCommands() {
+    persistState();
+    const data = buildStateJSON();
+    const lines = [
+        `# ─────────────────────────────────────────────────────────────`,
+        `# SumoCore parameter script generated from schematic`,
+        `# Plant: ${data.meta.plant_name}`,
+        `# Design Flow: ${data.meta.design_flow_m3d} m³/d`,
+        `# Temperature: ${data.meta.temperature_C} °C`,
+        `# Generated: ${data.meta.modified}`,
+        `# ─────────────────────────────────────────────────────────────`,
+        ``,
+        `# Load steady-state baseline`,
+        `load "state.xml";`,
+        ``,
+        `# Global parameters`,
+        `set Sumo__Plant__Influent__param__T ${data.meta.temperature_C};`,
+        ``
+    ];
+    data.units.forEach(u => {
+        if (!u.parameters.length) return;
+        lines.push(`# ── ${u.name} (${u.id}) ──`);
+        u.parameters.forEach(p => {
+            if (p.sumo_variable) lines.push(`set ${p.sumo_variable} ${p.value};   # ${p.description} [${p.unit}]`);
+        });
+        lines.push('');
+    });
+    lines.push('# Stream topology (informational — actual topology is set in .sumo file)');
+    data.streams.forEach(s => {
+        lines.push(`# ${s.id}: ${s.from} → ${s.to}  (${s.type})${s.label ? ' "' + s.label + '"' : ''}`);
+    });
+    lines.push('', 'mode steady;', 'start;');
+    openModal('Generated SumoCore Script', lines.join('\n'), false);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MODAL HELPERS
+───────────────────────────────────────────────────────────────────────── */
+function openModal(title, text, showApply) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-textarea').value = text;
+    document.getElementById('modal-textarea').readOnly = !showApply;
+    document.getElementById('modal-apply-btn').style.display = showApply ? 'inline-block' : 'none';
+    document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function copyModalContent() {
+    const t = document.getElementById('modal-textarea');
+    t.select(); document.execCommand('copy');
+}
+function downloadModalContent() {
+    const text = document.getElementById('modal-textarea').value;
+    const title = document.getElementById('modal-title').textContent.toLowerCase();
+    const ext = title.includes('json') ? 'json' : 'scs';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `schematic.${ext}`;
+    a.click();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SAVE HTML WITH BAKED-IN STATE (for MCP server consumption)
+───────────────────────────────────────────────────────────────────────── */
+function saveAsHTML() {
+    persistState();
+    const doctype = '<!DOCTYPE html>\n';
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([doctype + html], { type: 'text/html' });
+    const plantSlug = (document.getElementById('meta-plant').value || 'schematic')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    const ts = new Date().toISOString().slice(0,10);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${plantSlug}_${ts}.html`;
+    a.click();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   QAHA WWTP TEMPLATE
+───────────────────────────────────────────────────────────────────────── */
+function loadQahaTemplate() {
+    if (state.units.length && !confirm('Replace current schematic with the Qaha WWTP template?')) return;
+    const template = {
+        meta: { plant_name: 'Qaha WWTP', design_flow_m3d: 9820, temperature_C: 22 },
+        units: [
+            { id:'U1', type:'influent',             name:'Raw Influent',     position:{x:40,  y:220}, parameters:[
+                {key:'Q',value:9820},{key:'T',value:22},{key:'XCOD',value:650},{key:'XTKN',value:50},{key:'XTP',value:8},{key:'XTSS',value:350}] },
+            { id:'U2', type:'screen',               name:'Bar Screen',       position:{x:200, y:220}, parameters:[{key:'removalTSS',value:0.05}] },
+            { id:'U3', type:'primary_clarifier',    name:'Primary 1',        position:{x:360, y:220}, parameters:[
+                {key:'A',value:200},{key:'depth',value:3.5},{key:'Q_underflow',value:600},{key:'removalTSS',value:0.55}] },
+            { id:'U4', type:'oxidation_ditch',      name:'Ox Ditch (2 trains)', position:{x:540, y:220}, parameters:[
+                {key:'V',value:7480},{key:'DOsetpoint',value:1.8},{key:'aerated_fraction',value:0.5}] },
+            { id:'U5', type:'secondary_clarifier',  name:'Final Clarifier',  position:{x:740, y:220}, parameters:[
+                {key:'A',value:740},{key:'depth',value:4.0},{key:'SVI',value:148},{key:'v0',value:250}] },
+            { id:'U6', type:'effluent',             name:'Effluent',         position:{x:920, y:220}, parameters:[] },
+            { id:'U7', type:'sludge_splitter',      name:'Sludge Splitter',  position:{x:740, y:400}, parameters:[
+                {key:'ras_fraction',value:0.95},{key:'Q_RAS',value:7365},{key:'Q_WAS',value:350}] },
+            { id:'U8', type:'ras_flow',             name:'RAS Flow',         position:{x:540, y:400}, parameters:[
+                {key:'Q',value:7365},{key:'ratio',value:0.75}] },
+            { id:'U9', type:'was_flow',             name:'WAS Outlet',       position:{x:920, y:400}, parameters:[
+                {key:'Q',value:350},{key:'target_SRT',value:12}] }
+        ],
+        streams: [
+            { id:'S1', type:'process_flow', from:'U1', to:'U2', label:'' },
+            { id:'S2', type:'process_flow', from:'U2', to:'U3', label:'' },
+            { id:'S3', type:'process_flow', from:'U3', to:'U4', label:'PE' },
+            { id:'S4', type:'process_flow', from:'U4', to:'U5', label:'MLSS' },
+            { id:'S5', type:'process_flow', from:'U5', to:'U6', label:'Clarified' },
+            { id:'S6', type:'process_flow', from:'U5', to:'U7', label:'Underflow' },
+            { id:'S7', type:'ras',          from:'U7', to:'U8', label:'RAS' },
+            { id:'S8', type:'ras',          from:'U8', to:'U4', label:'' },
+            { id:'S9', type:'was',          from:'U7', to:'U9', label:'WAS' }
+        ]
+    };
+    loadFromJSON(template);
+}
+
+/*  Classic Activated-Sludge template — mirrors the Mermaid reference:
+        IN ── Raw Wastewater ──> AT
+        AT ── Mixed Liquor    ──> SC
+        SC ── Clarified Water ──> EFF
+        SC ── Underflow Sludge──> SPLIT
+        SPLIT ── RAS ──> AT          (the loop)
+        SPLIT ── WAS ──> WAS_OUT     (waste / sludge processing) */
+function loadClassicASTemplate() {
+    if (state.units.length && !confirm('Replace current schematic with the Classic Activated-Sludge template?')) return;
+    const template = {
+        meta: { plant_name: 'Classic AS Plant', design_flow_m3d: 10000, temperature_C: 20 },
+        units: [
+            { id:'U1', type:'influent',            name:'Influent',          position:{x: 40, y:220}, parameters:[
+                {key:'Q',value:10000},{key:'T',value:20},{key:'XCOD',value:600},{key:'XTKN',value:48},{key:'XTP',value:7},{key:'XTSS',value:300}] },
+            { id:'U2', type:'aerobic_zone',        name:'Aeration Tank',     position:{x:240, y:220}, parameters:[
+                {key:'V',value:3000},{key:'DOsetpoint',value:2.0},{key:'KLa',value:240}] },
+            { id:'U3', type:'secondary_clarifier', name:'Secondary Clarifier',position:{x:460, y:220}, parameters:[
+                {key:'A',value:600},{key:'depth',value:4.0},{key:'SVI',value:120},{key:'v0',value:250}] },
+            { id:'U4', type:'effluent',            name:'Effluent',          position:{x:680, y:220}, parameters:[] },
+            { id:'U5', type:'sludge_splitter',     name:'Sludge Splitter',   position:{x:460, y:400}, parameters:[
+                {key:'ras_fraction',value:0.95},{key:'Q_RAS',value:7500},{key:'Q_WAS',value:300}] },
+            { id:'U6', type:'ras_flow',            name:'RAS Flow',          position:{x:240, y:400}, parameters:[
+                {key:'Q',value:7500},{key:'ratio',value:0.75}] },
+            { id:'U7', type:'was_flow',            name:'WAS / Sludge Proc.',position:{x:680, y:400}, parameters:[
+                {key:'Q',value:300},{key:'target_SRT',value:12}] }
+        ],
+        streams: [
+            { id:'S1', type:'process_flow', from:'U1', to:'U2', label:'Raw Wastewater' },
+            { id:'S2', type:'process_flow', from:'U2', to:'U3', label:'Mixed Liquor'   },
+            { id:'S3', type:'process_flow', from:'U3', to:'U4', label:'Clarified'      },
+            { id:'S4', type:'process_flow', from:'U3', to:'U5', label:'Underflow'      },
+            { id:'S5', type:'ras',          from:'U5', to:'U6', label:'RAS'            },
+            { id:'S6', type:'ras',          from:'U6', to:'U2', label:''               },
+            { id:'S7', type:'was',          from:'U5', to:'U7', label:'WAS'            }
+        ]
+    };
+    loadFromJSON(template);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────────────────────── */
+['meta-plant', 'meta-flow', 'meta-temp'].forEach(id => {
+    document.getElementById(id).addEventListener('input', persistState);
+});
+renderPalette();
+loadQahaTemplate();
+setMode('config');
+</script>
+</body>
+</html>

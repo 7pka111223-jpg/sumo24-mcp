@@ -1,0 +1,13 @@
+{
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"ok\": false, \"error\": \"cannot access local variable 'ds' where it is not associated with a value\", \"operation_id\": \"2f178d4748f34b50b129700bdac4a046\"}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": true
+}

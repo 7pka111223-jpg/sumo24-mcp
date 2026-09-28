@@ -1,0 +1,5 @@
+# Custom unit build artifacts — regenerated from unit_spec.json (ticket 05)
+# unit_spec.json stays version-controlled; build/ and artifacts/ are derived.
+*/build/
+*/artifacts/
+*.xlc

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sumo24-mcp"
+version = "0.2.0"
+description = "SUMO24 MCP server with bundled DynaSand treatment unit"
+requires-python = ">=3.11"
+dependencies = ["mcp>=1.27,<2", "openpyxl>=3.1,<4", "xlsxwriter>=3.2,<4", "PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+gui = ["pywinauto>=0.6.9,<0.7; sys_platform == 'win32'", "pillow>=10", "pyperclip>=1.8"]
+reports = ["reportlab>=4", "python-docx>=1.1", "matplotlib>=3.8"]
+excel = ["pywin32>=306; sys_platform == 'win32'"]
+dev = ["build>=1.2"]
+
+[project.scripts]
+sumo24-mcp = "sumo24_mcp.entrypoint:main"
+sumo24-mcp-install = "sumo24_mcp.install_server:main"
+
+[tool.setuptools]
+packages = ["sumo24_mcp", "sumo24_mcp.pipeline", "dynamita"]
+include-package-data = false
+
+[tool.setuptools.package-dir]
+sumo24_mcp = "PY"
+"sumo24_mcp.pipeline" = "PY/pipeline"
+dynamita = "dynamita"
+
+[tool.setuptools.package-data]
+sumo24_mcp = ["data/*.json", "data/fixtures/*.json", "bundled_units/*.json", "bundled_units/HH_DynaSand_v1/*.json", "bundled_units/HH_DynaSand_v1/*.xlsx", "bundled_units/HH_DynaSand_v1/*.emf"]

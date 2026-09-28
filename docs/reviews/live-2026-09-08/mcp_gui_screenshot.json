@@ -1,0 +1,14 @@
+{
+  "elapsed_s": 0.20491369999945164,
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"ok\": true,\n  \"path\": \"F:\\\\Harness\\\\Orca\\\\SUMO24MCP\\\\MCP\\\\docs\\\\reviews\\\\live-2026-09-08\\\\sumo_gui_20260908_072944.png\",\n  \"bbox\": [\n    0,\n    0,\n    1920,\n    1020\n  ],\n  \"size_bytes\": 188030\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

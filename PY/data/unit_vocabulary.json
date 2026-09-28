@@ -1,0 +1,654 @@
+{
+ "meta": {
+  "source": "full-corpus census 02b, artifacts/census_full.json",
+  "corpus": "236 process-unit workbooks + 51 contrast (Energy/Hidden/Plantwide)",
+  "distinct_tokens": 359,
+  "total_occurrences": 93406
+ },
+ "classification": {
+  "clean_dimensional": {
+   "g.m-3": 9544,
+   "g N.m-3": 7266,
+   "g.d-1": 6431,
+   "g N.d-1": 4605,
+   "kW": 4300,
+   "g S.m-3": 4187,
+   "g P.m-3": 3149,
+   "l.s-1": 2957,
+   "m": 2666,
+   "m3.d-1": 2612,
+   "g S.d-1": 2527,
+   "g P.d-1": 1821,
+   "g COD.m-3": 1289,
+   "Hz": 1108,
+   "g N.m-3.d-1": 842,
+   "m3": 724,
+   "g O2.m-3": 691,
+   "g VSS.g TSS-1": 623,
+   "Pa": 611,
+   "mol P.d-1": 598,
+   "d-1": 517,
+   "m2": 505,
+   "g TSS.m-3": 431,
+   "l/s": 410,
+   "eq ALK.L-1": 349,
+   "h": 345,
+   "g": 327,
+   "l.s-1.Hz-1": 312,
+   "kW.Hz-1": 312,
+   "°C": 300,
+   "g. d-1": 287,
+   "g Fe.m-3": 278,
+   "g O2.m-3.d-1": 269,
+   "g P.m-3.d-1": 259,
+   "kg.d-1": 246,
+   "g Al.m-3": 239,
+   "d": 234,
+   "K": 215,
+   "l.s-1.m-1": 208,
+   "kW.m-1": 208,
+   "g.m-3.d-1": 204,
+   "cur.d-1": 201,
+   "g TSS.d-1": 198,
+   "g COD.d-1": 177,
+   "g polymer/kg TSS": 170,
+   "mm.d-1": 166,
+   "cur": 161,
+   "kg CO2eq": 158,
+   "g TSS": 154,
+   "mol.d-1": 141,
+   "1/m": 138,
+   "W.m-2": 138,
+   "g O2.d-1": 137,
+   "kWh": 124,
+   "m2.m-3": 123,
+   "mol.m-3": 117,
+   "m2.s-1": 115,
+   "ms": 115,
+   "g COD.m-3.d-1": 112,
+   "g VSS.m-3": 110,
+   "W/m³": 108,
+   "l.s-1.Hz-1.m-1": 104,
+   "kW.Hz-1.m-1": 104,
+   "l s-1": 104,
+   "Wh/m³": 104,
+   "Wh/m3": 102,
+   "g Cl.m-3": 102,
+   "g Na.m-3": 102,
+   "mV": 97,
+   "K/m": 91,
+   "cur.w-1": 90,
+   "cur.mon-1": 90,
+   "cur.y-1": 90,
+   "m.d-1": 81,
+   "g TIC.m-3": 76,
+   "kWh/PED.a": 74,
+   "kWh/m3": 74,
+   "Wh/kg TSS": 74,
+   "g O2/m3": 73,
+   "kg": 71,
+   "m2.d-1": 70,
+   "m bf": 69,
+   "s-1": 66,
+   "kg polymer/d": 66,
+   "kg.m-3": 65,
+   "g TSS/m3": 65,
+   "mol.L-1": 62,
+   "g VSS.d-1": 61,
+   "g S.m-3.d-3": 59,
+   "MJ.d-1": 59,
+   "g S.m-3.d-2": 53,
+   "g TIC.d-1": 50,
+   "g polymer/m3": 50,
+   "m-1": 49,
+   "g Ca.m-3": 47,
+   "cur.m-3": 45,
+   "g Mg.m-3": 45,
+   "g S.m-3.d-1": 44,
+   "m3/d": 44,
+   "mV.d-1": 42,
+   "g TSS.d-1.m-2": 38,
+   "ppm.m-3.m3": 38,
+   "m3.g-1": 37,
+   "m3.g-1.d-1": 36,
+   "g Fe.d-1": 36,
+   "cur.kg-1": 33,
+   "g EQ.d-1": 33,
+   "g polymer.kg TSS-1": 32,
+   "kWh.d-1": 32,
+   "m3.m-3": 31,
+   "g K.m-3": 31,
+   "g.cap-1.d-1": 30,
+   "kg.ha-1.d-1": 30,
+   "kg.ha-1": 30,
+   "m3.m-2.d-1": 28,
+   "m3.g COD-1": 28,
+   "g Al.d-1": 26,
+   "g TSS.m-2": 24,
+   "mgN.L-1": 24,
+   "g.m-2.d-1": 24,
+   "mol Fe.d-1": 24,
+   "kWh.m-3": 24,
+   "mm.d-2": 24,
+   "cm2.s-1": 20,
+   "kJ.d-1": 20,
+   "g N.d-1.m-2": 20,
+   "min": 20,
+   "W/m3": 18,
+   "ha": 18,
+   "g O2.m-2.d-1": 17,
+   "g Na.d-1": 17,
+   "kg CO2eq.d-1": 16,
+   "kg CO2eq.w-1": 16,
+   "kg CO2eq.mon-1": 16,
+   "kg CO2eq.y-1": 16,
+   "mL.g-1": 15,
+   "eq.L-1": 15,
+   "bar": 14,
+   "g N.m-2.d-1": 13,
+   "kWh.PED-1.a-1": 13,
+   "g CH4.d-1": 13,
+   "m3.g TSS-1": 12,
+   "g COD.g BOD-1": 12,
+   "mol Al.d-1": 12,
+   "Wh.m-3": 11,
+   "Wh.kg TSS-1": 11,
+   "mm": 11,
+   "kg O2.m-3.d-1": 10,
+   "kg O2/kWh": 10,
+   "g.(m3.d)-1": 10,
+   "kg O2.kWh-1": 10,
+   "K.m-1": 10,
+   "kWh.kg COD-1": 10,
+   "g K.d-1": 9,
+   "kg polymer.d-1": 9,
+   "mm.y-1": 9,
+   "W.m-2.d-1": 9,
+   "cur.TSS ton-1": 9,
+   "kg O2.d-1": 8,
+   "g.m-1.d-1": 8,
+   "g TS.meq-1": 8,
+   "g CO2eq.kWh-1": 8,
+   "cur.kg COD-1": 8,
+   "cur.PE-1.y-1": 8,
+   "Pa.s^n": 8,
+   "g SS.m-3": 7,
+   "g COD.g SS-1": 7,
+   "°C.d-1": 7,
+   "cur.kWh-1": 7,
+   "m.s-1": 6,
+   "m3.s-1": 6,
+   "kg BOD5.ha-1.d-1": 6,
+   "g BOD5.m-3.d-1": 6,
+   "MPN/100mL": 6,
+   "g.g TSS-1": 6,
+   "g Ca.d-1": 6,
+   "g Mg.d-1": 6,
+   "g Cl.d-1": 6,
+   "g polymer.m-3": 6,
+   "mol CATdi.l-1": 6,
+   "mol CATmono.l-1": 6,
+   "mol CATmono.mol CATdi-1": 6,
+   "l.cap-1.d-1": 6,
+   "mm-1": 6,
+   "Pa.m-3.h": 6,
+   "g O2.g N-1": 5,
+   "m-3.g TSS-1": 5,
+   "kg COD": 5,
+   "kg VSS": 5,
+   "kWh.PE-1.y-1": 5,
+   "kWh.PE-1": 5,
+   "TSS g": 4,
+   "J.g-1.K-1": 4,
+   "atm": 4,
+   "kg O2.m-3": 4,
+   "g COD.g BOD5-1": 4,
+   "g TSS.g BOD5-1": 4,
+   "g COD.g COD-1": 4,
+   "g TSS.g COD-1": 4,
+   "g P.g SS-1": 4,
+   "g COD.g VSS-1": 4,
+   "MJ.kg-1": 4,
+   "m-3": 4,
+   "Pa.m6.h-2": 4,
+   "L.min-1.m-2": 3,
+   "J.kg-1.K-1": 3,
+   "m GR": 3,
+   "L.m-2.h-1": 3,
+   "g.kg-1": 3,
+   "g N.g SS-1": 3,
+   "s": 3,
+   "Pa.m-3.h2": 3,
+   "m-3.h2": 3,
+   "m-3.h": 3,
+   "g CO2.d-1": 3,
+   "mbar": 3,
+   "cur.kWh-1.month-1": 3,
+   "Pa.s": 3,
+   "m3.m-2": 2,
+   "g VS.m-3": 2,
+   "km.h-1": 2,
+   "ug.L-1 per g COD.m-3": 2,
+   "J.m-2.°C-1": 2,
+   "J.m-2.s-1.K-4": 2,
+   "m2.kW-1": 2,
+   "N.s.m-2": 2,
+   "W.m-1.K-1": 2,
+   "W.K-1.m-2": 2,
+   "J.kg-1": 2,
+   "J.m-3.K.atm-1": 2,
+   "g.mol-1": 2,
+   "J.g-1": 2,
+   "atm.m3.mol-1.K-1": 2,
+   "ug.L-1": 2,
+   "cur.ton-1": 2,
+   "g.d-1.m-2": 2,
+   "g SO2.m-2.d-1": 2,
+   "g C.m-3": 2,
+   "eq ALK.d-1": 2,
+   "kg TSS.d-1": 2,
+   "g.cm-3": 2,
+   "kg/ton DS": 2,
+   "kg COD.d-1": 2,
+   "m3.d-2": 2,
+   "1.d-1": 2,
+   "g.m-2": 2,
+   "m3.h-1.rpm-1": 2,
+   "m3.h-1": 2,
+   "kW.rpm-1": 2,
+   "MJ .kg-1": 2,
+   "km": 2,
+   "kg CO2.t-1.km-1": 2,
+   "kg N2O.t-1": 2,
+   "cur.MJ-1": 2,
+   "kw2": 2,
+   "cur.kWh-1.year-1": 2,
+   "month": 2,
+   "PE (COD120)": 2,
+   "g.l-1": 2,
+   "m3.d-1.m-2": 1,
+   "g DM.m-3": 1,
+   "m3.cassette-1": 1,
+   "L": 1,
+   "mol.L-2": 1,
+   "mol.L-3": 1,
+   "gMe.m-3": 1,
+   "cur.Me kg-1": 1,
+   "kmol.m-3": 1,
+   "g N.g COD-1": 1,
+   "g.L-1": 1,
+   "kg .m-3": 1,
+   "d.m-3": 1,
+   "°C-1": 1,
+   "(g O2/g biomass)/(W/m2)/d": 1,
+   "(g O2/g biomass)/d": 1,
+   "kJ.kg-1.K-1": 1,
+   "m³": 1,
+   "cur.m-3 NG": 1,
+   "cur.kW": 1,
+   "cur.kWh-1.y": 1,
+   "g COD.PE-1": 1,
+   "kWh.PEO-1.a-1": 1,
+   "Wh.kg COD-1": 1,
+   "g COD.d-2": 1,
+   "g TSS.d-2": 1,
+   "l.Pa.s.g-1": 1
+  },
+  "conditioner": {
+   "m3 gas.d-1 at NTP": 736,
+   "m3 gas.m-3": 217,
+   "m3 gas.d-1 at field": 82,
+   "m3 gas": 81,
+   "m3.m-3 gas": 81,
+   "m3 gas.m-2.d-1 at NTP": 70,
+   "m3 gas.h-1": 70,
+   "g/m3 gas": 34,
+   "m3 gas.d-1 at STP": 29,
+   "m3/h at NTP": 14,
+   "m3 gas.h-1 at NTP": 9,
+   "m3 gas.d-1.kW-1": 7,
+   "Nm3.d-1": 6,
+   "g.m-3 gas": 5,
+   "m3 gas.h-1 at field": 5,
+   "m3 gas.min-1 at NTP.m-2": 3,
+   "Nm3.h-1": 2,
+   "Wh/m3 gas at NTP/bar": 2,
+   "Nm3 gas.d-1": 2
+  },
+  "non_dimensional": {
+   "-": 4566,
+   "unitless": 3824,
+   "pc": 1231,
+   "pHunit": 435,
+   "%": 375,
+   "m2/m2": 122,
+   "pHUnit": 83,
+   "CVunit": 65,
+   "m2.m-2": 58,
+   "MVunit": 57,
+   "PE": 53,
+   "ppm": 37,
+   "Unitless": 30,
+   "g.g-1": 22,
+   "ISUnit": 20,
+   "ISunit": 15,
+   "integer": 10,
+   "kg.kg-1": 9,
+   "CVunit*d": 8,
+   "mol.mol-1": 6,
+   "cap": 6,
+   "MVunit.CVunit-1": 5,
+   "CVunit.d-1": 5,
+   "rpm": 5,
+   "MVunit.CVunit-1.d-1": 3,
+   "MVunit.CVunit-1.d": 3,
+   "VUnit": 3,
+   "MVunit.d-1": 2,
+   "CVunit.d": 2,
+   "CVunit.d-2": 1
+  },
+  "model_expandable": {
+   "MODEL.SV.Unit": 1771,
+   "MODEL.PAR.Unit": 1451,
+   "MODEL.CVAR.Unit": 1397,
+   "MODEL.SV.Unit * m3.d-1": 1082,
+   "MODEL.CVAR.Unit * m3.d-1": 400,
+   "MODEL.Species.Unit": 380,
+   "MODEL.pH.Unit": 375,
+   "MODEL.SV.Unit * m3.d-1.m-2": 102,
+   "MODEL.CVAR.Unit * m3": 93,
+   "MODEL.CVAR.Unit * m3.d-1.m-2": 91,
+   "MODEL.SV.Unit * m3": 91,
+   "MODEL.Model.Unit": 46,
+   "MODEL.CVAR.Unit * g TSS.m-3": 9,
+   "MODEL.SV.Unit * d-1": 5,
+   "MODEL.Components.Unit": 3,
+   "MODEL.SV.Unit.d-1": 3,
+   "MODEL.Elemental.Unit": 1
+  },
+  "percent_scaled": {
+   "%.m-1": 871,
+   "%v.v-1": 403,
+   "%/m": 42,
+   "%v/v": 10,
+   "v/v%": 2,
+   "%p/%": 1,
+   "%v.v-1.d-1": 1
+  }
+ },
+ "equivalence_classes": [
+  {
+   "canonical": "g.d-1",
+   "tokens": [
+    {
+     "token": "g.d-1",
+     "count": 6431
+    },
+    {
+     "token": "g. d-1",
+     "count": 287
+    }
+   ],
+   "total_count": 6718
+  },
+  {
+   "canonical": "unitless",
+   "tokens": [
+    {
+     "token": "unitless",
+     "count": 3824
+    },
+    {
+     "token": "Unitless",
+     "count": 30
+    }
+   ],
+   "total_count": 3854
+  },
+  {
+   "canonical": "m3",
+   "tokens": [
+    {
+     "token": "m3",
+     "count": 724
+    },
+    {
+     "token": "m³",
+     "count": 1
+    }
+   ],
+   "total_count": 725
+  },
+  {
+   "canonical": "pHunit",
+   "tokens": [
+    {
+     "token": "pHunit",
+     "count": 435
+    },
+    {
+     "token": "pHUnit",
+     "count": 83
+    }
+   ],
+   "total_count": 518
+  },
+  {
+   "canonical": "Wh/m³",
+   "tokens": [
+    {
+     "token": "Wh/m³",
+     "count": 104
+    },
+    {
+     "token": "Wh/m3",
+     "count": 102
+    }
+   ],
+   "total_count": 206
+  },
+  {
+   "canonical": "W/m³",
+   "tokens": [
+    {
+     "token": "W/m³",
+     "count": 108
+    },
+    {
+     "token": "W/m3",
+     "count": 18
+    }
+   ],
+   "total_count": 126
+  },
+  {
+   "canonical": "kg.m-3",
+   "tokens": [
+    {
+     "token": "kg.m-3",
+     "count": 65
+    },
+    {
+     "token": "kg .m-3",
+     "count": 1
+    }
+   ],
+   "total_count": 66
+  },
+  {
+   "canonical": "ISUnit",
+   "tokens": [
+    {
+     "token": "ISUnit",
+     "count": 20
+    },
+    {
+     "token": "ISunit",
+     "count": 15
+    }
+   ],
+   "total_count": 35
+  },
+  {
+   "canonical": "MJ.kg-1",
+   "tokens": [
+    {
+     "token": "MJ.kg-1",
+     "count": 4
+    },
+    {
+     "token": "MJ .kg-1",
+     "count": 2
+    }
+   ],
+   "total_count": 6
+  },
+  {
+   "canonical": "g.l-1",
+   "tokens": [
+    {
+     "token": "g.l-1",
+     "count": 2
+    },
+    {
+     "token": "g.L-1",
+     "count": 1
+    }
+   ],
+   "total_count": 3
+  }
+ ],
+ "grammar_equivalence_families": [
+  {
+   "family": "slash_equals_dot_negative_exponent",
+   "members": [
+    "l.s-1",
+    "l/s",
+    "l s-1"
+   ],
+   "note": "l.s-1 == l/s == l s-1; the '/' and ' ' spellings are the same dimension. Requires a real parser, not string folding."
+  },
+  {
+   "family": "slash_equals_dot_negative_exponent",
+   "members": [
+    "m3.d-1",
+    "m3/d"
+   ],
+   "note": "volumetric flow, two spellings."
+  },
+  {
+   "family": "slash_equals_dot_negative_exponent",
+   "members": [
+    "g O2.m-3",
+    "g O2/m3"
+   ],
+   "note": "substance-qualified concentration, two spellings."
+  },
+  {
+   "family": "slash_equals_dot_negative_exponent",
+   "members": [
+    "g TSS.m-3",
+    "g TSS/m3"
+   ],
+   "note": "substance-qualified concentration, two spellings."
+  },
+  {
+   "family": "percent_volume_fraction",
+   "members": [
+    "%v.v-1",
+    "%v/v",
+    "v/v%"
+   ],
+   "note": "percent volume fraction, three spellings; dimensionless scaled by 100."
+  },
+  {
+   "family": "superscript_equals_exponent",
+   "members": [
+    "W.m-2",
+    "W/m2",
+    "W/m²"
+   ],
+   "note": "U+00B2 superscript two == exponent 2; 'W/m²' == 'W.m-2'."
+  },
+  {
+   "family": "superscript_equals_exponent",
+   "members": [
+    "Wh.m-3",
+    "Wh/m3",
+    "Wh/m³"
+   ],
+   "note": "U+00B3 superscript three == exponent 3."
+  },
+  {
+   "family": "superscript_equals_exponent",
+   "members": [
+    "m3",
+    "m³"
+   ],
+   "note": "cubic metre, two spellings."
+  },
+  {
+   "family": "whitespace_insignificant",
+   "members": [
+    "g.d-1",
+    "g. d-1"
+   ],
+   "note": "space inside the token is insignificant."
+  },
+  {
+   "family": "whitespace_insignificant",
+   "members": [
+    "kg.m-3",
+    "kg .m-3"
+   ],
+   "note": "space inside the token is insignificant."
+  },
+  {
+   "family": "whitespace_insignificant",
+   "members": [
+    "MJ.kg-1",
+    "MJ .kg-1"
+   ],
+   "note": "space inside the token is insignificant."
+  },
+  {
+   "family": "case_insensitive_spelling",
+   "members": [
+    "unitless",
+    "Unitless"
+   ],
+   "note": "case-insensitive; both spellings occur."
+  },
+  {
+   "family": "case_insensitive_spelling",
+   "members": [
+    "pHunit",
+    "pHUnit"
+   ],
+   "note": "case-insensitive."
+  },
+  {
+   "family": "case_insensitive_spelling",
+   "members": [
+    "ISUnit",
+    "ISunit"
+   ],
+   "note": "case-insensitive."
+  },
+  {
+   "family": "case_insensitive_spelling",
+   "members": [
+    "g.l-1",
+    "g.L-1"
+   ],
+   "note": "case-insensitive on the L."
+  }
+ ],
+ "canonicalisation_notes": {
+  "percent": "percent_is_a_scaled_dimension: '%' alone is non-dimensional; '%x' composites like %.m-1 are percent-scaled per-length and keep the /100 factor.",
+  "at_NTP": "physical-state annotation (standard temperature/pressure, field conditions); does not change the dimensional kernel.",
+  "substance_qualifier": "patterns 'g X.m-3' / 'g X.d-1' / 'g X/m3' qualify WHICH substance carries the mass; kernel is mass·[X]/volume etc. 'X' is a controlled symbol (N, P, S, COD, TSS, VSS, O2, TIC, Al, Fe, ...).",
+  "separator": "'.' is the canonical exponent separator; '/' and ' ' are synonymous variants to fold when canonicalising.",
+  "currency": "'cur' and 'cur.*' are a custom currency base unit (kW·h-equivalent pricing); not SI and must be treated as opaque custom base."
+ }
+}

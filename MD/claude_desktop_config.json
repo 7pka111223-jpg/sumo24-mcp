@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sumo24": {
+      "command": "py",
+      "args": ["-3", "F:/UNI/SUMO/MCP/PY/server.py"],
+      "env": {
+        "SUMO_DLL":    "F:/UNI/SUMO/MCP/sumoproject.dll",
+        "SUMO_STATE":  "F:/UNI/SUMO/MCP/state.xml",
+        "SUMO_OUTPUT": "F:/UNI/SUMO/MCP/outputs",
+        "PYTHONPATH":  "F:/UNI/SUMO/MCP"
+      }
+    }
+  }
+}

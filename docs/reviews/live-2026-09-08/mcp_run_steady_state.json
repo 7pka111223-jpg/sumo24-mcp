@@ -1,0 +1,14 @@
+{
+  "elapsed_s": 0.0038318000733852386,
+  "meta": null,
+  "content": [
+    {
+      "type": "text",
+      "text": "'SumoScheduler' object has no attribute 'dur'",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": true
+}

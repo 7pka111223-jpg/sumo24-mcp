@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "operation_id": "4678121528af40928f1985aa5bbeea75"
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"job_id\": 1,\n  \"status\": \"scheduled\",\n  \"mode\": \"dynamic\",\n  \"duration\": 0.01,\n  \"scenario\": \"none\",\n  \"hint\": \"Use get_job_status(job_id=1) to poll progress, then export_results_csv to get time-series data.\"\n}",
+      "annotations": null,
+      "meta": null
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
