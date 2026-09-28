@@ -31,7 +31,7 @@ For an already provisioned Python environment, `-SkipDependencies -PythonExe 'C:
 ## Wheel installation
 
 ```powershell
-python -m pip install 'sumo24_mcp-0.2.0-py3-none-any.whl[gui,reports,excel]'
+python -m pip install 'sumo24_mcp-2.0.0-py3-none-any.whl[gui,reports,excel]'
 sumo24-mcp-install
 ```
 

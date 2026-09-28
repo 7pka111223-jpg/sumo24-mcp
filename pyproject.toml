@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sumo24-mcp"
-version = "0.2.0"
+version = "2.0.0"
 description = "SUMO24 MCP server with bundled DynaSand treatment unit"
 requires-python = ">=3.11"
 dependencies = ["mcp>=1.27,<2", "openpyxl>=3.1,<4", "xlsxwriter>=3.2,<4", "PyYAML>=6,<7"]
