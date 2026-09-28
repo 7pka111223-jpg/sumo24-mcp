@@ -1,0 +1,2 @@
+# Preserve the exact bytes covered by the DynaSand source-release manifest.
+PY/bundled_units/HH_DynaSand_v1/unit_spec.json text eol=crlf
